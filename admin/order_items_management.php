@@ -60,10 +60,10 @@ if ($resultItems->num_rows > 0) {
 $conn->close();
 $total_price = 0;
 ?>
-<a href="admin_dashboard.php?view=orders" class="btn btn-secondary mt-3">← Quay lại quản lý đơn hàng</a>
+<a href="admin_dashboard.php?view=orders" class="btn btn-secondary mt-3 mb-3">← Quay lại</a>
 <h2 class="text-primary mb-4">Chi tiết đơn hàng #<?= $order['id'] ?></h2>
 
-<div class="card mb-4 p-3 shadow">
+<div class="card mb-4 p-3 shadow" style="overflow-x: auto;">
     <h4>Thông tin khách hàng</h4>
     <p><strong>Tên khách:</strong> <?= htmlspecialchars($order['username']) ?></p>
     <p><strong>Số điện thoại:</strong> <?= htmlspecialchars($order['phone']) ?></p>
@@ -74,7 +74,10 @@ $total_price = 0;
 
     <h4>Thông tin đơn hàng</h4>
     <p><strong>Tổng tiền:</strong> <?= number_format($order['total'], 0, ',', '.') ?>₫</p>
-    <p><strong>Trạng thái:</strong> <?= $statusTrans[$order['status']] ?? 'Không xác định' ?></p>
+    <p><strong>Trạng thái:</strong> <?= $statusTrans[$order['status']] ?? 'Không xác định' ?> <a
+            href="admin_dashboard.php?view=edit_order_items_status&order_id=<?= $order['id'] ?>"
+            class="btn btn-warning mt-3 mb-3">
+            Chỉnh sửa trạng thái</a></p>
     <p><strong>Ngày tạo:</strong> <?= htmlspecialchars($order['created_at']) ?></p>
 </div>
 
@@ -83,39 +86,83 @@ $total_price = 0;
 <?php if (empty($orderItems)): ?>
 <div class="alert alert-warning">Đơn hàng không có sản phẩm!</div>
 <?php else: ?>
-<table class="table table-bordered table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>Hình ảnh</th>
-            <th>Mẫu</th>
-            <th>Hãng</th>
-            <th>Số lượng</th>
-            <th>Giá (vnd)</th>
-            <th>Tổng (vnd)</th>
-        </tr>
-    </thead>
-    <tbody>
+<!-- Desktop Table View -->
+<div class="d-none d-md-block">
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Hình ảnh</th>
+                <th>Hãng</th>
+                <th>Mẫu</th>
+                <th>SL</th>
+                <th>Giá</th>
+                <th>Tổng</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($orderItems as $item): 
+                $total_price += $item['price'] * $item['quantity']; ?>
+            <tr>
+                <td>
+                    <img src="../images/<?= $item['image'] ?>" width="100px" style="object-fit: cover; height: 100px;">
+                </td>
+                <td><?= htmlspecialchars($item['brand']) ?></td>
+                <td><?= htmlspecialchars($item['model']) ?></td>
+                <td><?= $item['quantity'] ?></td>
+                <td><?= number_format($item['price'], 0, ',', '.') ?>₫</td>
+                <td><?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>₫</td>
+            </tr>
+            <?php endforeach; ?>
+            <tr class="table-active">
+                <td colspan="6">
+                    <h5 class="text-end mb-0">Tổng cộng: <strong
+                            class="text-danger"><?= number_format($total_price) ?>₫</strong></h5>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Mobile Card View -->
+<div class="d-md-none">
+    <div class="row g-3">
         <?php foreach ($orderItems as $item): 
             $total_price += $item['price'] * $item['quantity']; ?>
-        <tr>
-            <td>
-                <img src="../images/<?= $item['image'] ?>" width="100px">
-            </td>
-            <td><?= htmlspecialchars($item['model']) ?></td>
-            <td><?= htmlspecialchars($item['brand']) ?></td>
-            <td><?= $item['quantity'] ?></td>
-            <td><?= number_format($item['price'], 0, ',', '.') ?>₫</td>
-            <td><?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>₫</td>
-        </tr>
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="row g-0">
+                    <div class="col-4">
+                        <img src="../images/<?= $item['image'] ?>" alt="<?= htmlspecialchars($item['brand']) ?>"
+                            style="width: 100%; height: 120px; object-fit: cover;">
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body p-2">
+                            <h6 class="card-title mb-2"><?= htmlspecialchars($item['brand']) ?>
+                                <?= htmlspecialchars($item['model']) ?></h6>
+                            <div class="row text-sm mb-2">
+                                <div class="col-6"><small><strong>Số lượng:</strong> <?= $item['quantity'] ?></small>
+                                </div>
+                                <div class="col-6"><small><strong>Đơn giá:</strong>
+                                        <?= number_format($item['price'], 0, ',', '.') ?>₫</small></div>
+                            </div>
+                            <div class="border-top pt-2">
+                                <p class="mb-0"><strong>Thành tiền:</strong> <span
+                                        class="text-danger fw-bold"><?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>₫</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <?php endforeach; ?>
-        <tr>
-            <td colspan="6">
-                <h3 class="text-end">Tổng cộng: <strong class="text-danger"><?= number_format($total_price) ?>₫</strong>
-                </h3>
-            </td>
-        </tr>
-    </tbody>
-</table>
+    </div>
+
+    <div class="card mt-3 p-3 text-center border-danger" style="background: rgba(255, 71, 87, 0.05);">
+        <h5 class="mb-0">Tổng cộng: <strong class="text-danger"><?= number_format($total_price) ?>₫</strong></h5>
+    </div>
+</div>
+
 <?php endif; ?>
 
 <a href="admin_dashboard.php?view=orders" class="btn btn-secondary mt-3">← Quay lại quản lý đơn hàng</a>

@@ -45,10 +45,10 @@ if ($result === FALSE) {
 $conn->close();
 ?>
 <h2 style="color: blue">Quản lý sản phẩm</h2>
-<form method="GET" class="d-flex gap-2 mb-4">
+<form method="GET" class="d-flex gap-2 mb-4" style="flex-wrap: wrap;">
     <input type="hidden" name="view" value="products">
 
-    <select name="brand" class="form-select" style="max-width:200px">
+    <select name="brand" class="form-select" style="max-width:200px; flex: 1 1 auto; min-width: 120px;">
         <option value="all">Tất cả hãng</option>
         <?php foreach ($unique_brands as $b): ?>
         <option value="<?= $b ?>" <?= ($filter_brand==$b?"selected":"") ?>><?= $b ?></option>
@@ -56,37 +56,41 @@ $conn->close();
     </select>
 
     <input name="search" class="form-control" placeholder="Tìm tên xe/hãng"
-        value="<?= htmlspecialchars($search_query) ?>" size="20">
+        value="<?= htmlspecialchars($search_query) ?>" style="flex: 1 1 auto; min-width: 150px;">
 
-    <button class="btn btn-primary">Lọc</button>
-    <a href="admin_dashboard.php?view=add" class="btn btn-success">Thêm</a>
+    <button class="btn btn-primary" style="flex: 0 0 auto;">Lọc</button>
+    <a href="admin_dashboard.php?view=add" class="btn btn-success" style="flex: 0 0 auto;">Thêm</a>
 </form>
-
-<div class="row">
+<div class="row g-3">
     <?php foreach ($products as $p):
         $modal_id = 'modal-' . $p['id'];
          $short_description = truncate_description($p['description'], 100); ?>
-    <div class="col-md-3 mb-4">
-        <div class="card shadow-sm h-100">
-            <img src="/../images/<?= $p['image'] ?>" class="card-img-top">
-            <div class="card-body">
-                <h5><?= $p["brand"] . " " . $p["model"] ?></h5>
-                <p class="text-muted">Tỉ lệ: <?= $p["scale"] ?></p>
-                <p class="text-muted">Số lượng: <?= $p["stock"] ?></p>
-                <p class="fw-bold text-danger"><?= format_currency($p["price"]) ?></p>
-                <p class="card-text small mb-2">
-                    <strong>Chi tiết về xe:</strong> <?= $short_description ?>
+    <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
+        <div class="card shadow-sm h-100 d-flex flex-column">
+            <img src="/../images/<?= $p['image'] ?>" class="card-img-top" style="height: 180px; object-fit: cover;">
+            <div class="card-body d-flex flex-column flex-grow-1">
+                <h5 class="card-title" style="font-size: 1rem; margin-bottom: 8px;">
+                    <?= $p["brand"] . " " . $p["model"] ?></h5>
+                <p class="text-muted small mb-1">Tỉ lệ: <?= $p["scale"] ?></p>
+                <p class="text-muted small mb-2">Số lượng: <?= $p["stock"] ?></p>
+                <p class="fw-bold text-danger mb-2" style="font-size: 1.1rem;"><?= format_currency($p["price"]) ?></p>
+                <p class="card-text small mb-3 flex-grow-1">
+                    <strong>Chi tiết:</strong> <?= $short_description ?>
 
                     <?php if (strlen($p['description']) > 100): ?>
-                    <a href="#" class="text-primary text-decoration-none fw-bold" data-bs-toggle="modal"
+                    <a href="#" class="text-primary text-decoration-none fw-bold d-block mt-1" data-bs-toggle="modal"
                         data-bs-target="#<?= $modal_id ?>">
-                        Xem thêm
+                        Xem thêm →
                     </a>
                     <?php endif; ?>
                 </p>
-                <a href="admin_dashboard.php?view=edit&id=<?= $p['id'] ?>" class="btn btn-sm btn-warning">Sửa</a>
-                <a href="admin_dashboard.php?view=delete&id=<?= $p['id'] ?>" class="btn btn-sm btn-danger"
-                    onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a>
+                <div class="d-flex gap-2">
+                    <a href="admin_dashboard.php?view=edit&id=<?= $p['id'] ?>"
+                        class="btn btn-sm btn-warning flex-grow-1">Sửa</a>
+                    <a href="admin_dashboard.php?view=delete&id=<?= $p['id'] ?>"
+                        class="btn btn-sm btn-danger flex-grow-1"
+                        onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a>
+                </div>
             </div>
         </div>
     </div>

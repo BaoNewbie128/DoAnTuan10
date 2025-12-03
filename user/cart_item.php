@@ -57,66 +57,111 @@
     } 
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giỏ hàng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 
 <body class="bg-light">
 
-    <div class="container mt-5">
-        <a href="dashboard.php" class="btn btn-secondary">Quay lại</a>
-        <br />
-        <br />
-        <h2 class="mb-4">Giỏ hàng của bạn</h2>
+    <div class="app-container">
+        <div class="mb-3">
+            <a href="dashboard.php" class="btn btn-secondary btn-sm">← Quay lại</a>
+        </div>
+        <h2 class="page-title mb-4">Giỏ hàng của bạn</h2>
 
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Ảnh</th>
-                    <th>Tên Sản phẩm</th>
-                    <th>Số lượng</th>
-                    <th>Giá</th>
-                    <th>Tổng</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-        $total = 0;
-        if ($result2 && $result2->num_rows > 0) :
-        while ($row = $result2->fetch_assoc()):
-            $subtotal = $row["price"] * $row["quantity"];
-            $total += $subtotal;
-        ?>
-                <tr>
-                    <td width="120"><img src="../images/<?= $row['image'] ?>" width="100"></td>
-                    <td><?= $row["brand"] . " " . $row["model"] ?></td>
-                    <td><?= $row["quantity"] ?></td>
-                    <td><?= number_format($row["price"]) ?>₫</td>
-                    <td><?= number_format($subtotal) ?>₫</td>
-                    <td>
-                        <a href="cart_item.php?action=delete&id=<?= $row['product_id'] ?>" class="btn btn-danger btn-sm"
-                            onclick="return confirm('Xóa sản phẩm này khỏi giỏ?');">
-                            Xóa
-                        </a>
-                    </td>
-                </tr>
-                </tr>
-                <?php endwhile;
-                else: ?>
-                <tr>
-                    <td colspan="6" class="text-center text-muted">Giỏ hàng của bạn đang trống.</td>
-                </tr>
-                <?php endif; ?>
-            </tbody>
-        </table>
-        <a href="dashboard.php" class="btn btn-secondary">Quay lại</a>
-        <a href="orders.php?action=checkout" class="btn btn-success text-end">Đặt hàng</a>
-        <h3 class="text-end">Tổng cộng: <strong class="text-danger"><?= number_format($total) ?>₫</strong></h3>
+        <!-- Desktop Table View -->
+        <div class="d-none d-md-block">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Ảnh</th>
+                        <th>Tên Sản phẩm</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Tổng</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+            $total = 0;
+            if ($result2 && $result2->num_rows > 0) :
+            while ($row = $result2->fetch_assoc()):
+                $subtotal = $row["price"] * $row["quantity"];
+                $total += $subtotal;
+            ?>
+                    <tr>
+                        <td width="120"><img src="../images/<?= $row['image'] ?>" width="100"></td>
+                        <td><?= $row["brand"] . " " . $row["model"] ?></td>
+                        <td><?= $row["quantity"] ?></td>
+                        <td><?= number_format($row["price"]) ?>₫</td>
+                        <td><?= number_format($subtotal) ?>₫</td>
+                        <td>
+                            <a href="cart_item.php?action=delete&id=<?= $row['product_id'] ?>"
+                                class="btn btn-danger btn-sm" onclick="return confirm('Xóa sản phẩm này khỏi giỏ?');">
+                                Xóa
+                            </a>
+                        </td>
+                    </tr>
+                    <?php endwhile;
+                    else: ?>
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">Giỏ hàng của bạn đang trống.</td>
+                    </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
 
+        <!-- Mobile Card View -->
+        <div class="d-md-none">
+            <?php
+            $total = 0;
+            if ($result2 && $result2->num_rows > 0) :
+            while ($row = $result2->fetch_assoc()):
+                $subtotal = $row["price"] * $row["quantity"];
+                $total += $subtotal;
+            ?>
+            <div class="card mb-3 shadow-sm">
+                <div class="row g-0">
+                    <div class="col-4">
+                        <img src="../images/<?= $row['image'] ?>" class="img-fluid w-100 h-100"
+                            style="object-fit: cover;" alt="<?= $row['brand'] ?>">
+                    </div>
+                    <div class="col-8">
+                        <div class="card-body p-3">
+                            <h6 class="card-title mb-2"><?= $row["brand"] . " " . $row["model"] ?></h6>
+                            <p class="mb-2 small">Số lượng: <strong><?= $row["quantity"] ?></strong></p>
+                            <p class="mb-2 small">Giá: <strong><?= number_format($row["price"]) ?>₫</strong></p>
+                            <p class="mb-3 text-danger fw-bold">Tổng: <?= number_format($subtotal) ?>₫</p>
+                            <a href="cart_item.php?action=delete&id=<?= $row['product_id'] ?>"
+                                class="btn btn-danger btn-sm w-100"
+                                onclick="return confirm('Xóa sản phẩm này khỏi giỏ?');">
+                                Xóa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endwhile;
+            else: ?>
+            <div class="alert alert-info text-center">Giỏ hàng của bạn đang trống.</div>
+            <?php endif; ?>
+        </div>
+
+        <div class="mt-4 d-flex flex-column flex-md-row gap-3 justify-content-between align-items-md-center">
+            <a href="dashboard.php" class="btn btn-secondary">← Quay lại</a>
+            <div class="text-md-end">
+                <h4 class="mb-2">Tổng cộng: <strong class="text-danger"><?= number_format($total) ?>₫</strong></h4>
+                <a href="orders.php?action=checkout" class="btn btn-success">Đặt hàng →</a>
+            </div>
+        </div>
     </div>
 
 </body>

@@ -29,15 +29,15 @@ if ($result === FALSE) {
 $conn->close();
 ?>
 <h2 style="color: blue">Quản lý khách hàng</h2>
-<form method="GET" class="d-flex gap-2 mb-5">
+<form method="GET" class="d-flex gap-2 mb-5" style="flex-wrap: wrap;">
     <input type="hidden" name="view" value="customers">
     <input name="search" class="form-control" placeholder="Tìm tên người dùng/email"
-        value="<?= htmlspecialchars($search_query) ?>" size="20">
-    <button type="submit" class="btn btn-primary">Tìm</button>
+        value="<?= htmlspecialchars($search_query) ?>" style="flex: 1 1 auto; min-width: 150px;">
+    <button type="submit" class="btn btn-primary" style="flex: 0 0 auto;">Tìm</button>
 </form>
 <div class="row">
     <?php foreach($customers as $c) :?>
-    <div>
+    <div class="col-md-6 mb-3">
         <div class="card shadow-sm">
             <div class="card-body">
                 <h5>Tên người dùng: <?= htmlspecialchars($c["username"]) ?></h5>
@@ -47,5 +47,6 @@ $conn->close();
                 <p class="text-muted">Ngày tạo: <?= htmlspecialchars($c["created_at"]) ?></p>
             </div>
         </div>
-        <?php endforeach;?>
     </div>
+    <?php endforeach;?>
+</div>

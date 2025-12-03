@@ -25,15 +25,15 @@
     }
     
 ?>
-<a href="admin_dashboard.php?view=products" class="btn btn-secondary">Quay lại</a>
-<h2 style="color: blue">Thêm sản phẩm mới</h2>
+<a href="admin_dashboard.php?view=products" class="btn btn-secondary mb-3">← Quay lại</a>
+<h2 style="color: blue; margin-bottom: 20px;">Thêm sản phẩm mới</h2>
 <?php if(!empty($success)): ?>
 <div class="alert alert-success"><?= $success ?></div>
 <?php endif; ?>
 <?php if(!empty($error_message)): ?>
 <div class="alert alert-danger"><?= $error_message ?></div>
 <?php endif; ?>
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" style="max-width: 600px;">
     <div class="mb-3">
         <label class="form-label">Hãng</label><br />
         <input type="text" name="brand" class="form-control" required><br />

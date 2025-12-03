@@ -41,7 +41,7 @@
 
     <div class="app-container container mt-4">
         <div class="row g-4">
-            <div class="col-md-3">
+            <div class="col-md-3 mb-3">
                 <aside class="card p-3 shadow-sm">
                     <div class="mb-3 text-center">
                         <strong>Xin chào</strong>
@@ -53,13 +53,13 @@
                         <a class="nav-link nav-btn" href="admin_dashboard.php?view=orders">Đơn hàng</a>
                         <a class="nav-link nav-btn" href="admin_dashboard.php?view=customers">Khách hàng</a>
                         <a class="nav-link nav-btn" href="#">Đánh giá</a>
-                        <a class="text-white btn btn-danger" href="/logout.php">Đăng xuất</a>
+                        <a class="text-white btn btn-danger w-100" href="/logout.php">Đăng xuất</a>
                     </nav>
                 </aside>
             </div>
 
             <!-- Main Content -->
-            <main class="col-md-9">
+            <main class="col-md-9" style="flex: 1;">
                 <?php 
                     if(isset($_GET["view"]) && $_GET["view"] === "products") {
                         include __DIR__ . "/product_management.php";
@@ -74,6 +74,9 @@
                         include __DIR__ . "/order_management.php";
                     }elseif(isset($_GET["view"]) && $_GET["view"] === "order_items") {
                         include __DIR__ . "/order_items_management.php";
+                    }
+                    elseif(isset($_GET["view"]) && $_GET["view"] === "edit_order_items_status") {
+                        include __DIR__ . "/edit_order_items_status.php";
                     }
                     elseif(isset($_GET["view"]) && $_GET["view"] === "customers") {
                         include __DIR__ . "/customer_management.php";

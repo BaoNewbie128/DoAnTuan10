@@ -45,25 +45,28 @@
     } 
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đơn hàng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 
 <body class="bg-light">
 
-    <div class="container mt-5">
-        <a href="dashboard.php" class="btn btn-secondary">Quay lại</a>
-        <br />
-        <br />
-        <h2 class="mb-4">Đơn hàng của bạn</h2>
+    <div class="app-container">
+        <div class="mb-3">
+            <a href="dashboard.php" class="btn btn-secondary btn-sm">← Quay lại</a>
+        </div>
+        <h2 class="page-title mb-4">Đơn hàng của bạn</h2>
+        
         <?php if(empty($orderlist)):?>
-        <tr>
-            <td colspan="5" class="text-center text-muted">Không có sản phẩm nào</td>
-        </tr>
+        <div class="alert alert-info text-center">Không có sản phẩm nào</div>
         <?php endif; ?>
+        
         <?php foreach($orderlist as $orderData):?>
         <?php
                 $order = $orderData['order'];
@@ -77,56 +80,93 @@
                     'canceled' => 'Đã hủy'
                 ];
         ?>
-        <h4>Đơn hàng #<?= $order['id'] ?> - Ngày đặt hàng: <?= $order['created_at'] ?> - Trạng thái:
-            <?= $statusTrans[$order['status']] ?? 'Không xác định' ?></h4>
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Ảnh</th>
-                    <th>Tên Sản phẩm</th>
-                    <th>Số lượng</th>
-                    <th>Giá</th>
-                    <th>Tổng</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if($items->num_rows >0):?>
-                <?php while($row = $items->fetch_assoc()):
-                $subtotal = $row["price"] * $row["quantity"];
-                $total += $subtotal;
-                ?>
-                <tr>
-                    <td width="120"><img src="../images/<?= $row['image'] ?>" width="100"></td>
-                    <td><?= $row["brand"] . " " . $row["model"] ?></td>
-                    <td><?= $row["quantity"] ?></td>
-                    <td><?= number_format($row["price"]) ?>₫</td>
-                    <td><?= number_format($subtotal) ?>₫</td>
-                </tr>
-                <?php endwhile; ?>
-                <?php else: ?>
-                <tr>
-                    <td colspan="5" class="text-center text-muted">Không có sản phẩm nào</td>
-                </tr>
-                <?php endif; ?>
-                <tr>
-                    <td colspan="5">
-                        <h3 class="text-end">Tổng cộng: <strong
-                                class="text-danger"><?= number_format($total) ?>₫</strong></h3>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <a href="order_items.php?action=delete_all&id=<?= $order['id'] ?>" class="btn btn-danger btn-sm"
-            onclick="return confirm('Bạn muốn hủy đơn hàng này?');">
-            Hủy đơn đặt hàng
-        </a>
-        <?php endforeach; ?>
-        <br />
-        <br />
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0">Đơn hàng #<?= $order['id'] ?> | <?= $order['created_at'] ?> | <span class="badge bg-info"><?= $statusTrans[$order['status']] ?? 'Không xác định' ?></span></h6>
+            </div>
+            <div class="card-body p-0">
+                <!-- Desktop Table View -->
+                <div class="d-none d-md-block">
+                    <table class="table table-bordered table-striped mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Tên Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Giá</th>
+                                <th>Tổng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if($items->num_rows >0):?>
+                            <?php while($row = $items->fetch_assoc()):
+                            $subtotal = $row["price"] * $row["quantity"];
+                            $total += $subtotal;
+                            ?>
+                            <tr>
+                                <td width="120"><img src="../images/<?= $row['image'] ?>" width="100" style="object-fit: cover;"></td>
+                                <td><?= $row["brand"] . " " . $row["model"] ?></td>
+                                <td><?= $row["quantity"] ?></td>
+                                <td><?= number_format($row["price"]) ?>₫</td>
+                                <td><?= number_format($subtotal) ?>₫</td>
+                            </tr>
+                            <?php endwhile; ?>
+                            <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">Không có sản phẩm nào</td>
+                            </tr>
+                            <?php endif; ?>
+                            <tr class="table-light fw-bold">
+                                <td colspan="4" class="text-end">Tổng cộng:</td>
+                                <td class="text-danger"><?= number_format($total) ?>₫</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-        <a href="dashboard.php" class="btn btn-secondary">Quay lại</a>
+                <!-- Mobile Card View -->
+                <div class="d-md-none p-3">
+                    <?php $items->data_seek(0); ?>
+                    <?php if($items->num_rows >0):?>
+                    <?php while($row = $items->fetch_assoc()):
+                    $subtotal = $row["price"] * $row["quantity"];
+                    $total += $subtotal;
+                    ?>
+                    <div class="mb-3 pb-3 border-bottom">
+                        <div class="row g-2">
+                            <div class="col-4">
+                                <img src="../images/<?= $row['image'] ?>" class="img-fluid w-100" style="object-fit: cover; height: 100px;" alt="<?= $row['brand'] ?>">
+                            </div>
+                            <div class="col-8">
+                                <h6 class="mb-2"><?= $row["brand"] . " " . $row["model"] ?></h6>
+                                <p class="mb-1 small">Số lượng: <strong><?= $row["quantity"] ?></strong></p>
+                                <p class="mb-1 small">Giá: <strong><?= number_format($row["price"]) ?>₫</strong></p>
+                                <p class="text-danger fw-bold">Tổng: <?= number_format($subtotal) ?>₫</p>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endwhile; ?>
+                    <div class="mt-3 pt-2 border-top">
+                        <h6 class="text-end">Tổng cộng: <span class="text-danger fw-bold"><?= number_format($total) ?>₫</span></h6>
+                    </div>
+                    <?php else: ?>
+                    <div class="alert alert-info mb-0">Không có sản phẩm nào</div>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <div class="card-footer bg-light">
+                <a href="order_items.php?action=delete_all&id=<?= $order['id'] ?>" class="btn btn-danger btn-sm w-100"
+                    onclick="return confirm('Bạn muốn hủy đơn hàng này?');">
+                    Hủy đơn hàng
+                </a>
+            </div>
+        </div>
+        <?php endforeach; ?>
+
+        <div class="mt-4">
+            <a href="dashboard.php" class="btn btn-secondary">← Quay lại</a>
+        </div>
     </div>
-    <br />
 
 </body>
 

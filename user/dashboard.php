@@ -59,7 +59,7 @@ $conn->close();
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">JDM World</a>
+            <a class="navbar-brand fw-bold" href="dashboard.php">JDM World</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -96,6 +96,7 @@ $conn->close();
                     <li class="nav-item"><a class="nav-link" href="dashboard.php">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="cart_item.php">Giỏ hàng</a></li>
                     <li class="nav-item"><a class="nav-link" href="order_items.php">Đơn hàng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="reviews.php">Đánh giá</a></li>
                     <li class="nav-item"><a class="nav-link text-danger" href="/logout.php">Đăng xuất</a></li>
                 </ul>
             </div>
@@ -121,7 +122,7 @@ $conn->close();
                 $modal_id = 'modal-' . $p['id'];
             ?>
 
-            <div class="col-md-3 mb-4">
+            <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                 <div class="card shadow-sm h-100">
                     <img src="../images/<?= $image_path ?>" class="card-img-top product-img" alt="<?= $full_name ?>">
                     <div class="card-body">
