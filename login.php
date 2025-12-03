@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 
 <body class="bg-light" style="background: url('images/BackGround.jpg');">
-    <div class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="app-container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card p-4 shadow-lg" style="width: 100%; max-width: 400px;">
             <div class="card-body">
                 <h2 class="card-title text-center mb-4">Đăng nhập</h2>

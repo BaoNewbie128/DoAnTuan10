@@ -59,18 +59,52 @@ $conn->close();
         value="<?= htmlspecialchars($search_query) ?>" size="20">
 
     <button class="btn btn-primary">Lọc</button>
+    <a href="admin_dashboard.php?view=add" class="btn btn-success">Thêm</a>
 </form>
 
 <div class="row">
-    <?php foreach ($products as $p): ?>
+    <?php foreach ($products as $p):
+        $modal_id = 'modal-' . $p['id'];
+         $short_description = truncate_description($p['description'], 100); ?>
     <div class="col-md-3 mb-4">
         <div class="card shadow-sm h-100">
-            <img src="/../<?= $p['image'] ?>" class="card-img-top">
+            <img src="/../images/<?= $p['image'] ?>" class="card-img-top">
             <div class="card-body">
                 <h5><?= $p["brand"] . " " . $p["model"] ?></h5>
                 <p class="text-muted">Tỉ lệ: <?= $p["scale"] ?></p>
                 <p class="text-muted">Số lượng: <?= $p["stock"] ?></p>
                 <p class="fw-bold text-danger"><?= format_currency($p["price"]) ?></p>
+                <p class="card-text small mb-2">
+                    <strong>Chi tiết về xe:</strong> <?= $short_description ?>
+
+                    <?php if (strlen($p['description']) > 100): ?>
+                    <a href="#" class="text-primary text-decoration-none fw-bold" data-bs-toggle="modal"
+                        data-bs-target="#<?= $modal_id ?>">
+                        Xem thêm
+                    </a>
+                    <?php endif; ?>
+                </p>
+                <a href="admin_dashboard.php?view=edit&id=<?= $p['id'] ?>" class="btn btn-sm btn-warning">Sửa</a>
+                <a href="admin_dashboard.php?view=delete&id=<?= $p['id'] ?>" class="btn btn-sm btn-danger"
+                    onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">Xóa</a>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="<?= $modal_id ?>" tabindex="-1" aria-labelledby="<?= $modal_id ?>Label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="<?= $modal_id ?>Label">Chi tiết về xe:
+                        <?= $p["brand"] . " " . $p["model"] ?></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <?= nl2br(htmlspecialchars($p['description'])) ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
             </div>
         </div>
     </div>

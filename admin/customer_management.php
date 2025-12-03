@@ -1,0 +1,51 @@
+<?php
+    require __DIR__ . "/../config/db.php";
+    $customers = [];
+    $error_message ="";
+
+    $search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
+    $where_clauses = [];
+    if (!empty($search_query)) {
+        $where_clauses[] = "(username LIKE '%$search_query%' OR email LIKE '%$search_query%')";
+    }
+
+    $where_sql = " WHERE role ='customer'";
+    if(count($where_clauses) > 0) {
+        $where_sql .= ' AND ' . implode(' AND ', $where_clauses);
+    }
+    
+    $sql = "SELECT id, username, email,phone,address, created_at FROM users " . $where_sql . " ORDER BY id DESC";
+$result = $conn->query($sql);
+if ($result === FALSE) {
+    $error_message = '<div class="alert alert-danger text-center">Lỗi truy vấn: ' . $conn->error . '</div>';
+} else {
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $customers[] = $row;
+        }
+    }
+    $result->free();
+}
+$conn->close();
+?>
+<h2 style="color: blue">Quản lý khách hàng</h2>
+<form method="GET" class="d-flex gap-2 mb-5">
+    <input type="hidden" name="view" value="customers">
+    <input name="search" class="form-control" placeholder="Tìm tên người dùng/email"
+        value="<?= htmlspecialchars($search_query) ?>" size="20">
+    <button type="submit" class="btn btn-primary">Tìm</button>
+</form>
+<div class="row">
+    <?php foreach($customers as $c) :?>
+    <div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5>Tên người dùng: <?= htmlspecialchars($c["username"]) ?></h5>
+                <p class="text-muted">Email: <?= htmlspecialchars($c["email"]) ?></p>
+                <p class="text-muted">Số điện thoại: <?= htmlspecialchars($c["phone"]) ?></p>
+                <p class="text-muted">Địa chỉ: <?= htmlspecialchars($c["address"]) ?></p>
+                <p class="text-muted">Ngày tạo: <?= htmlspecialchars($c["created_at"]) ?></p>
+            </div>
+        </div>
+        <?php endforeach;?>
+    </div>

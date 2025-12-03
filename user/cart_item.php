@@ -67,6 +67,9 @@
 <body class="bg-light">
 
     <div class="container mt-5">
+        <a href="dashboard.php" class="btn btn-secondary">Quay lại</a>
+        <br />
+        <br />
         <h2 class="mb-4">Giỏ hàng của bạn</h2>
 
         <table class="table table-bordered table-striped">
@@ -83,12 +86,13 @@
             <tbody>
                 <?php
         $total = 0;
+        if ($result2 && $result2->num_rows > 0) :
         while ($row = $result2->fetch_assoc()):
             $subtotal = $row["price"] * $row["quantity"];
             $total += $subtotal;
         ?>
                 <tr>
-                    <td width="120"><img src="../<?= $row['image'] ?>" width="100"></td>
+                    <td width="120"><img src="../images/<?= $row['image'] ?>" width="100"></td>
                     <td><?= $row["brand"] . " " . $row["model"] ?></td>
                     <td><?= $row["quantity"] ?></td>
                     <td><?= number_format($row["price"]) ?>₫</td>
@@ -101,12 +105,18 @@
                     </td>
                 </tr>
                 </tr>
-                <?php endwhile; ?>
+                <?php endwhile;
+                else: ?>
+                <tr>
+                    <td colspan="6" class="text-center text-muted">Giỏ hàng của bạn đang trống.</td>
+                </tr>
+                <?php endif; ?>
             </tbody>
         </table>
         <a href="dashboard.php" class="btn btn-secondary">Quay lại</a>
+        <a href="orders.php?action=checkout" class="btn btn-success text-end">Đặt hàng</a>
         <h3 class="text-end">Tổng cộng: <strong class="text-danger"><?= number_format($total) ?>₫</strong></h3>
-        <a href="order.php" class="btn btn-secondary text-end">Đặt hàng</a>
+
     </div>
 
 </body>

@@ -3,3 +3,70 @@
         height: 180px;
         object-fit: cover;
     }
+
+/* Global theme */
+:root{
+    --primary: #00d4ff; /* cyan */
+    --accent: #16213e; /* deep indigo */
+    --bg: #f6f8fa;
+    --muted:#6c757d;
+    --danger: #ff4757;
+}
+
+html,body{
+    height:100%;
+}
+
+body{
+    background-color:var(--bg);
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    color: #212529;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+}
+
+/* Header / navbar */
+.transparent-header{background: rgba(26,26,46,0.6); backdrop-filter: blur(8px); box-shadow:0 6px 18px rgba(0,0,0,0.12);}
+.brand-title{font-size:1.6rem; font-weight:900; color:var(--primary); letter-spacing:2px; text-shadow:0 2px 6px rgba(0,0,0,0.25);padding: 10px;}
+nav a.nav-btn{color:#fff; font-weight:600; text-decoration:none;margin: 8px; padding:8px 14px; border-radius:6px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); transition:all .18s ease}
+nav a.nav-btn:hover{background:var(--primary); color:#000; transform:translateY(-1px)}
+nav a.primary-cta{background:var(--primary); color:#000; border-color:var(--primary)}
+aside nav a.nav-btn {
+    color: #333 !important;
+    background: transparent;
+    border:1px solid #ddd;
+}
+
+aside nav a.nav-btn:hover {
+    background: #e6e6e6;
+    color: #000 !important;
+    transform: none;
+}
+
+/* Containers and layout helpers */
+.app-container{max-width:1200px; margin:0 auto; padding:30px 16px}
+.page-title{font-size:1.4rem; font-weight:800; margin-bottom:18px; color:#111}
+
+/* Cards */
+.card{border-radius:12px; overflow:hidden}
+.card .card-body{padding:18px}
+.card-title{font-weight:700; font-size:1rem}
+
+/* Forms */
+.form-label{font-weight:600}
+.form-control{border-radius:8px; padding:10px 12px; box-shadow:none; border:1px solid #e6e9ee}
+.form-control:focus{box-shadow:0 0 0 0.15rem rgba(0,212,255,0.14); border-color:var(--primary)}
+.btn{border-radius:8px}
+
+/* Footer */
+footer.site-footer{padding:18px 12px; background:#fff; border-top:1px solid #eceff3; text-align:center; color:var(--muted);}
+
+/* Small helpers */
+.muted{color:var(--muted)}
+.product-img{height:200px; object-fit:cover; border-bottom:1px solid #f1f3f5}
+.card .price{font-weight:800; color:#c92a2a}
+
+@media (max-width:768px){
+    .brand-title{font-size:1.2rem}
+    .app-container{padding:20px}
+}

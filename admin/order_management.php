@@ -1,0 +1,44 @@
+<?php
+    require __DIR__ . "/../config/db.php";
+    $orders = [];
+    $error_message ="";
+    $sql = "SELECT o.id,u.username,o.total,o.status,o.created_at FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.id DESC";
+$result = $conn->query($sql);
+if ($result === FALSE) {
+    $error_message = '<div class="alert alert-danger text-center">Lỗi truy vấn: ' . $conn->error . '</div>';
+} else {
+    if ($result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            $orders[] = $row;
+        }
+    }
+    $result->free();
+}
+ $statusTrans = [
+                    'pending' => 'Chưa xử lý',
+                    'paid' => 'Đã thanh toán',
+                    'shipping' => 'Đang giao hàng',
+                    'completed' => 'Hoàn thành',
+                    'canceled' => 'Đã hủy'
+                ];
+$conn->close();
+?>
+<h2 style="color: blue">Quản lý đơn hàng</h2>
+<div class="row">
+    <?php foreach($orders as $o) :?>
+    <div class="col-md-5 mb-4 mt-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Đơn hàng #<?= $o['id'] ?></h5>
+                <p class="card-text"><strong>Tên khách hàng:</strong> <?= htmlspecialchars($o['username']) ?></p>
+                <p class="card-text"><strong>Tổng tiền:</strong> <?= number_format($o['total'], 0, ',', '.') ?>₫</p>
+                <p class="card-text"><strong>Trạng thái:</strong> <?= $statusTrans[$o['status']] ?? 'Không xác định' ?>
+                </p>
+                <p class="card-text"><strong>Ngày tạo:</strong> <?= htmlspecialchars($o['created_at']) ?></p>
+                <a href="admin_dashboard.php?view=order_items&order_id=<?= $o['id'] ?>" class="btn btn-primary">Xem chi
+                    tiết đơn hàng</a>
+            </div>
+        </div>
+    </div>
+    <?php endforeach; ?>
+</div>

@@ -44,7 +44,6 @@ if ($result === FALSE) {
 $conn->close();
 ?>
 
-<h2>Chào <?php echo $_SESSION["username"]; ?></h2>
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -54,7 +53,7 @@ $conn->close();
     <title>JDM Model Shop - Sản phẩm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-    <link rel="stylesheet" href="/../assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 
 <body class="bg-light">
@@ -94,15 +93,21 @@ $conn->close();
                     <button class="btn btn-outline-light" type="submit">Tìm</button>
                 </form>
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="cart_item.php">Giỏ hàng</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/logout.php">Đăng xuất</a></li>
+                    <li class="nav-item"><a class="nav-link" href="order_items.php">Đơn hàng</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="/logout.php">Đăng xuất</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="container">
-        <h2 class="mb-4 fw-bold text-center">Các mô hình xe JDM</h2>
+    <div class="app-container container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <p class="mb-0">Chào <strong><?php echo htmlspecialchars($_SESSION["username"]); ?></strong></p>
+            </div>
+            <h2 class="mb-0 fw-bold page-title">Các mô hình xe JDM</h2>
+        </div>
         <?= $error_message ?>
         <div class="row" id="productList">
             <?php
@@ -118,7 +123,7 @@ $conn->close();
 
             <div class="col-md-3 mb-4">
                 <div class="card shadow-sm h-100">
-                    <img src="/../<?= $image_path ?>?>" class="card-img-top" alt="<?= $full_name ?>">
+                    <img src="../images/<?= $image_path ?>" class="card-img-top product-img" alt="<?= $full_name ?>">
                     <div class="card-body">
                         <h5 class="card-title"><?= $full_name ?></h5>
                         <p class="card-text text-muted">Tỉ lệ: <?= htmlspecialchars($p['scale']) ?></p>
