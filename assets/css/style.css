@@ -66,7 +66,59 @@ footer.site-footer{padding:18px 12px; background:#fff; border-top:1px solid #ece
 .product-img{height:200px; object-fit:cover; border-bottom:1px solid #f1f3f5}
 .card .price{font-weight:800; color:#c92a2a}
 
-@media (max-width:768px){
-    .brand-title{font-size:1.2rem}
+/* Responsive Design */
+@media (max-width:1024px){
     .app-container{padding:20px}
+    .transparent-header{padding: 15px 20px !important;}
+    .brand-title{font-size:1.4rem}
+    nav a.nav-btn{padding:6px 12px; font-size:0.9rem}
+}
+
+@media (max-width:768px){
+    .brand-title{font-size:1.2rem; letter-spacing:1px}
+    .app-container{padding:15px}
+    nav{flex-direction: column; gap: 8px !important}
+    nav a.nav-btn{width:100%; text-align:center; padding:10px 8px}
+    .card{margin-bottom:12px}
+    .product-img{height:150px}
+    .row.g-4{gap:12px !important}
+    .col-md-3, .col-md-9, .col-md-6{width:100% !important}
+    .display-6{font-size:1.5rem !important}
+}
+
+@media (max-width:576px){
+    body{font-size:14px}
+    .brand-title{font-size:1rem; letter-spacing:0.5px}
+    .transparent-header{padding: 10px 12px !important;}
+    nav{display:flex !important; flex-wrap:wrap; gap:6px !important; width:100%}
+    nav a.nav-btn{flex:1 1 calc(50% - 3px); padding:8px 4px; font-size:0.85rem}
+    .page-title{font-size:1.1rem; margin-bottom:12px}
+    .app-container{padding:10px}
+    .card .card-body{padding:12px}
+    .form-control{padding:8px 10px; font-size:14px}
+    .btn{padding:8px 12px; font-size:0.9rem}
+    .product-img{height:120px}
+    .display-6{font-size:1.3rem !important}
+    .row row-cols-md-3{flex-direction:column}
+    .col{flex:0 0 100% !important}
+    .table{font-size:0.85rem}
+    table th, table td{padding:6px 4px !important}
+    .alert{padding:10px 12px; font-size:0.9rem}
+    footer.site-footer{padding:12px 8px}
+    .card p{margin-bottom:8px}
+    h1,h2,h3,h4,h5,h6{margin-bottom:8px}
+}
+
+@media (max-width:400px){
+    .brand-title{font-size:0.9rem}
+    .transparent-header{padding: 8px 10px !important;}
+    body{font-size:13px}
+    nav a.nav-btn{flex:1 1 100%; font-size:0.8rem; padding:6px 2px}
+    .page-title{font-size:1rem}
+    .card .card-body{padding:10px}
+    .form-control{padding:6px 8px; font-size:12px}
+    .btn{padding:6px 10px; font-size:0.85rem}
+    .product-img{height:100px}
+    .modal-dialog{margin:10px}
+    .display-6{font-size:1.2rem !important}
 }

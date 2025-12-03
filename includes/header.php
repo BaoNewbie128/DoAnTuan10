@@ -14,10 +14,10 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <body>
 
-    <header class="transparent-header">
-        <h1 class="brand-title">JDM WORLD</h1>
+    <header class="transparent-header" style="padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <h1 class="brand-title" style="margin: 0;">JDM WORLD</h1>
 
-        <nav style="display: flex; gap: 15px; align-items: center;">
+        <nav style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
 
 
             <?php if (!isset($_SESSION["user_id"])): ?>
