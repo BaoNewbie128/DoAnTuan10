@@ -45,6 +45,7 @@ if ($result === FALSE) {
 $conn->close();
 ?>
 <h2 style="color: blue">Quản lý sản phẩm</h2>
+<a href="admin_dashboard.php?view=add" class="btn btn-success mb-3" style="flex: 0 0 auto;">Thêm 1 sản phẩm</a>
 <form method="GET" class="d-flex gap-2 mb-4" style="flex-wrap: wrap;">
     <input type="hidden" name="view" value="products">
 
@@ -55,11 +56,11 @@ $conn->close();
         <?php endforeach; ?>
     </select>
 
-    <input name="search" class="form-control" placeholder="Tìm tên xe/hãng"
+    <input name="search" class="form-control" placeholder="Tìm tên xe/hãng/màu"
         value="<?= htmlspecialchars($search_query) ?>" style="flex: 1 1 auto; min-width: 150px;">
 
     <button class="btn btn-primary" style="flex: 0 0 auto;">Lọc</button>
-    <a href="admin_dashboard.php?view=add" class="btn btn-success" style="flex: 0 0 auto;">Thêm</a>
+
 </form>
 <div class="row g-3">
     <?php foreach ($products as $p):

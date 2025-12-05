@@ -19,7 +19,7 @@
     $result4 = $conn->query($sql4);
     $row4 = $result4->fetch_assoc();
     $total_admins = $row4['total_admins'];
-    $conn->close();
+    // $conn->close();
 ?>
 
 
@@ -52,7 +52,7 @@
                         <a class="nav-link nav-btn" href="admin_dashboard.php?view=products">Quản lý sản phẩm</a>
                         <a class="nav-link nav-btn" href="admin_dashboard.php?view=orders">Đơn hàng</a>
                         <a class="nav-link nav-btn" href="admin_dashboard.php?view=customers">Khách hàng</a>
-                        <a class="nav-link nav-btn" href="#">Đánh giá</a>
+                        <a class="nav-link nav-btn" href="admin_dashboard.php?view=reviews">Đánh giá</a>
                         <a class="text-white btn btn-danger w-100" href="/logout.php">Đăng xuất</a>
                     </nav>
                 </aside>
@@ -75,8 +75,11 @@
                     }elseif(isset($_GET["view"]) && $_GET["view"] === "order_items") {
                         include __DIR__ . "/order_items_management.php";
                     }
-                    elseif(isset($_GET["view"]) && $_GET["view"] === "edit_order_items_status") {
-                        include __DIR__ . "/edit_order_items_status.php";
+                    elseif(isset($_GET["view"]) && $_GET["view"] === "reviews") {
+                        include __DIR__ . "/reviews_management.php";
+                    }
+                    elseif(isset($_GET["view"]) && $_GET["view"] === "edit_order_status") {
+                        include __DIR__ . "/edit_order_status.php";
                     }
                     elseif(isset($_GET["view"]) && $_GET["view"] === "customers") {
                         include __DIR__ . "/customer_management.php";

@@ -59,7 +59,11 @@ $conn->close();
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="dashboard.php">JDM World</a>
+            <div>
+                <p class="m-4 text-white">Chào <strong><?php echo htmlspecialchars($_SESSION["username"]); ?></strong>
+                </p>
+            </div>
+            <a class="navbar-brand fw-bold" style="color: aqua;" href="dashboard.php">JDM World</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -88,7 +92,7 @@ $conn->close();
 
                 <form class="d-flex me-3" method="GET">
                     <input type="hidden" name="brand" value="<?= htmlspecialchars($filter_brand) ?>">
-                    <input class="form-control me-2" type="search" placeholder="Tìm tên xe/hãng" aria-label="Search"
+                    <input class="form-control me-2" type="search" placeholder="Tìm tên xe/hãng/màu" aria-label="Search"
                         name="search" value="<?= htmlspecialchars($search_query) ?>">
                     <button class="btn btn-outline-light" type="submit">Tìm</button>
                 </form>
@@ -96,7 +100,6 @@ $conn->close();
                     <li class="nav-item"><a class="nav-link" href="dashboard.php">Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="cart_item.php">Giỏ hàng</a></li>
                     <li class="nav-item"><a class="nav-link" href="order_items.php">Đơn hàng</a></li>
-                    <li class="nav-item"><a class="nav-link" href="reviews.php">Đánh giá</a></li>
                     <li class="nav-item"><a class="nav-link text-danger" href="/logout.php">Đăng xuất</a></li>
                 </ul>
             </div>
@@ -104,9 +107,7 @@ $conn->close();
     </nav>
     <div class="app-container container">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <p class="mb-0">Chào <strong><?php echo htmlspecialchars($_SESSION["username"]); ?></strong></p>
-            </div>
+
             <h2 class="mb-0 fw-bold page-title">Các mô hình xe JDM</h2>
         </div>
         <?= $error_message ?>
@@ -147,6 +148,8 @@ $conn->close();
                         </p>
                         <a href="cart_add.php?product_id=<?= $p['id'] ?>" class="btn btn-primary w-100">Thêm vào giỏ
                             hàng</a>
+                        <a href="reviews.php?product_id=<?= $p['id'] ?>" class="btn btn-secondary w-100 mt-2">Xem đánh
+                            giá</a>
                     </div>
                 </div>
             </div>

@@ -126,4 +126,6 @@ footer.site-footer{padding:18px 12px; background:#fff; border-top:1px solid #ece
     .modal-dialog{margin:10px}
     .display-6{font-size:1.2rem !important}
     footer.site-footer{padding:6px 8px; font-size:0.85rem;}
+    /* Cart mobile card images */
+    .d-md-none .col-4 img{height:90px; object-fit:cover;}
 }

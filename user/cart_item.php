@@ -8,10 +8,10 @@
     $user_id = $_SESSION["user_id"];
      $sql = "SELECT id FROM cart WHERE user_id = $user_id";
           $result=$conn->query($sql);
+          $items =[];
    if($result->num_rows === 0){
         $cart_id = 0; 
         $result2 = null; 
-        
     } else {
          $cart_id = $result->fetch_assoc()["id"];
          $sql2 = "SELECT ci.product_id,ci.quantity,p.brand,p.model,p.image,p.price
@@ -19,6 +19,11 @@
                   JOIN products p ON ci.product_id = p.id 
                   WHERE ci.cart_id = $cart_id";
          $result2 = $conn->query($sql2); // Biến $result2 đã được định nghĩa ở đây
+          if ($result2 && $result2->num_rows > 0) {
+        while($row = $result2->fetch_assoc()) {
+            $items[] = $row;
+        }
+    }
     }
 
     if(isset($_GET['action']) && isset($_GET['id']) && $cart_id > 0){
@@ -69,6 +74,8 @@
 
 <body class="bg-light">
 
+    <?php include __DIR__ . "/../includes/header.php"; ?>
+
     <div class="app-container">
         <div class="mb-3">
             <a href="dashboard.php" class="btn btn-secondary btn-sm">← Quay lại</a>
@@ -90,9 +97,10 @@
                 </thead>
                 <tbody>
                     <?php
+            
             $total = 0;
-            if ($result2 && $result2->num_rows > 0) :
-            while ($row = $result2->fetch_assoc()):
+            if (!empty($items)):
+            foreach ($items as $row):
                 $subtotal = $row["price"] * $row["quantity"];
                 $total += $subtotal;
             ?>
@@ -109,7 +117,7 @@
                             </a>
                         </td>
                     </tr>
-                    <?php endwhile;
+                    <?php endforeach;
                     else: ?>
                     <tr>
                         <td colspan="6" class="text-center text-muted">Giỏ hàng của bạn đang trống.</td>
@@ -123,8 +131,8 @@
         <div class="d-md-none">
             <?php
             $total = 0;
-            if ($result2 && $result2->num_rows > 0) :
-            while ($row = $result2->fetch_assoc()):
+            if (!empty($items)) :
+            foreach ($items as $row):
                 $subtotal = $row["price"] * $row["quantity"];
                 $total += $subtotal;
             ?>
@@ -149,20 +157,32 @@
                     </div>
                 </div>
             </div>
-            <?php endwhile;
+            <?php endforeach;
             else: ?>
             <div class="alert alert-info text-center">Giỏ hàng của bạn đang trống.</div>
             <?php endif; ?>
         </div>
 
-        <div class="mt-4 d-flex flex-column flex-md-row gap-3 justify-content-between align-items-md-center">
-            <a href="dashboard.php" class="btn btn-secondary">← Quay lại</a>
-            <div class="text-md-end">
-                <h4 class="mb-2">Tổng cộng: <strong class="text-danger"><?= number_format($total) ?>₫</strong></h4>
-                <a href="orders.php?action=checkout" class="btn btn-success">Đặt hàng →</a>
+        <div class="mt-4">
+            <div class="card p-3 bg-white shadow-sm">
+                <div class="row align-items-center">
+                    <div class="col-12 col-md-6">
+                        <h4 class="mb-0 mb-md-0">Tổng cộng: <span
+                                class="text-danger fw-bold"><?= number_format($total) ?>₫</span></h4>
+                    </div>
+                    <div class="col-12 col-md-6 mt-3 mt-md-0">
+                        <div class="d-flex gap-2 flex-column flex-md-row">
+                            <a href="dashboard.php" class="btn btn-secondary btn-sm flex-grow-1">← Quay lại</a>
+                            <a href="orders.php?action=checkout" class="btn btn-success btn-sm flex-grow-1">Đặt hàng
+                                →</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
+    <?php include __DIR__ . "/../includes/footer.php"; ?>
 
 </body>
 

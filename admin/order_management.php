@@ -19,7 +19,7 @@ if ($result === FALSE) {
                     'paid' => 'Đã thanh toán',
                     'shipping' => 'Đang giao hàng',
                     'completed' => 'Hoàn thành',
-                    'canceled' => 'Đã hủy'
+                    'cancelled' => 'Đã hủy'
                 ];
 $conn->close();
 ?>
@@ -33,6 +33,8 @@ $conn->close();
                 <p class="card-text"><strong>Tên khách hàng:</strong> <?= htmlspecialchars($o['username']) ?></p>
                 <p class="card-text"><strong>Tổng tiền:</strong> <?= number_format($o['total'], 0, ',', '.') ?>₫</p>
                 <p class="card-text"><strong>Trạng thái:</strong> <?= $statusTrans[$o['status']] ?? 'Không xác định' ?>
+                    <a href="admin_dashboard.php?view=edit_order_status&order_id=<?= $o['id'] ?>"
+                        class="btn btn-warning">Chỉnh sửa</a>
                 </p>
                 <p class="card-text"><strong>Ngày tạo:</strong> <?= htmlspecialchars($o['created_at']) ?></p>
                 <a href="admin_dashboard.php?view=order_items&order_id=<?= $o['id'] ?>" class="btn btn-primary">Xem chi
