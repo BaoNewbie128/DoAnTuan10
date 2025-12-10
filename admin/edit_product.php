@@ -11,6 +11,7 @@
         $brand = $conn->real_escape_string($_POST['brand']);
         $model = $conn->real_escape_string($_POST['model']);
         $scale = $conn->real_escape_string($_POST['scale']);
+        $color = $conn->real_escape_string($_POST['color']);
         $price = floatval($_POST['price']);
         $stock = $conn->real_escape_string($_POST['stock']);
         $description = $conn->real_escape_string($_POST['description']);
@@ -19,7 +20,7 @@
           $image_name = time() . "_" . basename($_FILES['image']['name']);
           move_uploaded_file($_FILES['image']["tmp_name"], __DIR__ . "/../images/" . $image_name);
         } 
-        $sql = "UPDATE products SET brand='$brand', model='$model', scale='$scale', price=$price, stock='$stock', description='$description', image='$image_name' WHERE id=$id";
+        $sql = "UPDATE products SET brand='$brand', model='$model', scale='$scale', price=$price, stock='$stock', color='$color', description='$description', image='$image_name' WHERE id=$id";
           if($conn->query($sql) === TRUE){
               $success = "Cập nhật sản phẩm thành công!";
               $product = $conn->query("SELECT * FROM products WHERE id = $id")->fetch_assoc();
@@ -30,7 +31,7 @@
     exit; 
     }
 ?>
-<a href="admin_dashboard.php?view=products" class="btn btn-secondary mb-3">← Quay lại</a>
+<a href="admin_dashboard.php?view=products" class="btn btn-secondary mb-3">Quay lại</a>
 <h2 style="color: blue; margin-bottom: 20px;">Chỉnh sửa sản phẩm</h2>
 <?php if(!empty($success)): ?>
 <div class="alert alert-success"><?= $success ?></div>
@@ -48,6 +49,9 @@
             required><br />
         <label class="form-label">Tỉ lệ</label><br />
         <input type="text" name="scale" class="form-control" value="<?= htmlspecialchars($product['scale']) ?>"
+            required><br />
+        <label class="form-label">Màu</label><br />
+        <input type="text" name="color" class="form-control" value="<?= htmlspecialchars($product['color']) ?>"
             required><br />
         <label class="form-label">Giá</label><br />
         <input type="number" name="price" step="0.01" class="form-control"

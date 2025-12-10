@@ -12,7 +12,7 @@
     if($orders && $orders->num_rows >0){
         while($order = $orders->fetch_assoc()){
             $order_item_id = $order['id'];
-            $sql2 = "SELECT oi.product_id,oi.quantity,p.brand,p.model,p.image,p.price
+            $sql2 = "SELECT oi.product_id,oi.quantity,p.brand,p.model,p.image,p.price,p.color
                      FROM order_items oi 
                      JOIN products p ON oi.product_id = p.id 
                      WHERE oi.order_id = $order_item_id";
@@ -91,6 +91,7 @@
                                 <th>Ảnh</th>
                                 <th>Tên Sản phẩm</th>
                                 <th>Số lượng</th>
+                                <th>Màu</th>
                                 <th>Giá</th>
                                 <th>Tổng</th>
                             </tr>
@@ -106,6 +107,7 @@
                                         style="object-fit: cover;"></td>
                                 <td><?= $row["brand"] . " " . $row["model"] ?></td>
                                 <td><?= $row["quantity"] ?></td>
+                                <td><?= $row["color"] ?></td>
                                 <td><?= number_format($row["price"]) ?>₫</td>
                                 <td><?= number_format($subtotal) ?>₫</td>
                             </tr>
@@ -116,7 +118,7 @@
                             </tr>
                             <?php endif; ?>
                             <tr class="table-light fw-bold">
-                                <td colspan="4" class="text-end">Tổng cộng:</td>
+                                <td colspan="5" class="text-end">Tổng cộng:</td>
                                 <td class="text-danger"><?= number_format($total) ?>₫</td>
                             </tr>
                         </tbody>
@@ -140,6 +142,7 @@
                             <div class="col-8">
                                 <h6 class="mb-2"><?= $row["brand"] . " " . $row["model"] ?></h6>
                                 <p class="mb-1 small">Số lượng: <strong><?= $row["quantity"] ?></strong></p>
+                                <p class="mb-1 small">Màu: <strong><?= $row["color"] ?></strong></p>
                                 <p class="mb-1 small">Giá: <strong><?= number_format($row["price"]) ?>₫</strong></p>
                                 <p class="text-danger fw-bold">Tổng: <?= number_format($subtotal) ?>₫</p>
                             </div>
@@ -165,7 +168,7 @@
         <?php endforeach; ?>
 
         <div class="mt-4">
-            <a href="dashboard.php" class="btn btn-secondary">← Quay lại</a>
+            <a href="dashboard.php" class="btn btn-secondary">Quay lại</a>
         </div>
     </div>
 

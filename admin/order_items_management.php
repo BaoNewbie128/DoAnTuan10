@@ -36,7 +36,8 @@ $sqlItems = "
         order_items.price,
         products.model,
         products.brand,
-        products.image
+        products.image,
+        products.color
     FROM order_items
     JOIN products ON order_items.product_id = products.id
     WHERE order_items.order_id = $order_id
@@ -60,7 +61,7 @@ if ($resultItems->num_rows > 0) {
 $conn->close();
 $total_price = 0;
 ?>
-<a href="admin_dashboard.php?view=orders" class="btn btn-secondary mt-3 mb-3">← Quay lại</a>
+<a href="admin_dashboard.php?view=orders" class="btn btn-secondary mt-3 mb-3">Quay lại</a>
 <h2 class="text-primary mb-4">Chi tiết đơn hàng #<?= $order['id'] ?></h2>
 
 <div class="card mb-4 p-3 shadow" style="overflow-x: auto;">
@@ -75,7 +76,7 @@ $total_price = 0;
     <h4>Thông tin đơn hàng</h4>
     <p><strong>Tổng tiền:</strong> <?= number_format($order['total'], 0, ',', '.') ?>₫</p>
     <p><strong>Trạng thái:</strong> <?= $statusTrans[$order['status']] ?? 'Không xác định' ?> <a
-            href="admin_dashboard.php?view=edit_order_items_status&order_id=<?= $order['id'] ?>"
+            href="admin_dashboard.php?view=edit_order_status&order_id=<?= $order['id'] ?>"
             class="btn btn-warning mt-3 mb-3">
             Chỉnh sửa trạng thái</a></p>
     <p><strong>Ngày tạo:</strong> <?= htmlspecialchars($order['created_at']) ?></p>
@@ -94,14 +95,15 @@ $total_price = 0;
                 <th>Hình ảnh</th>
                 <th>Hãng</th>
                 <th>Mẫu</th>
-                <th>SL</th>
+                <th>Số lượng</th>
+                <th>Màu</th>
                 <th>Giá</th>
                 <th>Tổng</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($orderItems as $item): 
-                $total_price += $item['price'] * $item['quantity']; ?>
+                        $total_price += $item['price'] * $item['quantity']; ?>
             <tr>
                 <td>
                     <img src="../images/<?= $item['image'] ?>" width="100px" style="object-fit: cover; height: 100px;">
@@ -109,12 +111,13 @@ $total_price = 0;
                 <td><?= htmlspecialchars($item['brand']) ?></td>
                 <td><?= htmlspecialchars($item['model']) ?></td>
                 <td><?= $item['quantity'] ?></td>
+                <td><?= $item['color'] ?></td>
                 <td><?= number_format($item['price'], 0, ',', '.') ?>₫</td>
                 <td><?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>₫</td>
             </tr>
             <?php endforeach; ?>
             <tr class="table-active">
-                <td colspan="6">
+                <td colspan="7">
                     <h5 class="text-end mb-0">Tổng cộng: <strong
                             class="text-danger"><?= number_format($total_price) ?>₫</strong></h5>
                 </td>
@@ -127,7 +130,7 @@ $total_price = 0;
 <div class="d-md-none">
     <div class="row g-3">
         <?php foreach ($orderItems as $item): 
-            $total_price += $item['price'] * $item['quantity']; ?>
+                    $total_price += $item['price'] * $item['quantity']; ?>
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="row g-0">
@@ -141,6 +144,8 @@ $total_price = 0;
                                 <?= htmlspecialchars($item['model']) ?></h6>
                             <div class="row text-sm mb-2">
                                 <div class="col-6"><small><strong>Số lượng:</strong> <?= $item['quantity'] ?></small>
+                                </div>
+                                <div class="col-6"><small><strong>Màu:</strong> <?= $item['color'] ?></small>
                                 </div>
                                 <div class="col-6"><small><strong>Đơn giá:</strong>
                                         <?= number_format($item['price'], 0, ',', '.') ?>₫</small></div>
@@ -165,4 +170,13 @@ $total_price = 0;
 
 <?php endif; ?>
 
-<a href="admin_dashboard.php?view=orders" class="btn btn-secondary mt-3">← Quay lại quản lý đơn hàng</a>
+<div class="mt-4">
+    <a href="admin_dashboard.php?view=orders" class="btn btn-secondary">Quay lại quản lý đơn hàng</a>
+</div>
+</div>
+
+<?php include __DIR__ . "/../includes/footer.php"; ?>
+
+</body>
+
+</html>

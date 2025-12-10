@@ -27,7 +27,7 @@ $search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search
 
     $where_sql = count($where_clauses) > 0 ? ' WHERE ' . implode(' AND ', $where_clauses) : '';
     
-    $sql = "SELECT id, brand, model, scale, price, stock, image, description FROM products " . $where_sql . "ORDER BY id DESC";
+    $sql = "SELECT id, brand, model, scale, price, stock, color, image, description FROM products " . $where_sql . "ORDER BY id DESC";
 $result = $conn->query($sql);
 if ($result === FALSE) {
     $error_message = '<div class="alert alert-danger text-center">Lỗi truy vấn: ' . $conn->error . '</div>';
@@ -65,7 +65,7 @@ $conn->close();
 <div class="row g-3">
     <?php foreach ($products as $p):
         $modal_id = 'modal-' . $p['id'];
-         $short_description = truncate_description($p['description'], 100); ?>
+         $short_description = truncate_description($p['description'], 20); ?>
     <div class="col-lg-4 col-md-6 col-sm-12 mb-3">
         <div class="card shadow-sm h-100 d-flex flex-column">
             <img src="/../images/<?= $p['image'] ?>" class="card-img-top" style="height: 180px; object-fit: cover;">
@@ -74,14 +74,15 @@ $conn->close();
                     <?= $p["brand"] . " " . $p["model"] ?></h5>
                 <p class="text-muted small mb-1">Tỉ lệ: <?= $p["scale"] ?></p>
                 <p class="text-muted small mb-2">Số lượng: <?= $p["stock"] ?></p>
+                <p class="text-muted small mb-2">Màu: <strong><?= $p["color"] ?></strong></p>
                 <p class="fw-bold text-danger mb-2" style="font-size: 1.1rem;"><?= format_currency($p["price"]) ?></p>
                 <p class="card-text small mb-3 flex-grow-1">
                     <strong>Chi tiết:</strong> <?= $short_description ?>
 
-                    <?php if (strlen($p['description']) > 100): ?>
+                    <?php if (strlen($p['description']) > 20): ?>
                     <a href="#" class="text-primary text-decoration-none fw-bold d-block mt-1" data-bs-toggle="modal"
                         data-bs-target="#<?= $modal_id ?>">
-                        Xem thêm →
+                        Xem thêm
                     </a>
                     <?php endif; ?>
                 </p>

@@ -76,10 +76,10 @@ $conn->close();
                     <small class="text-muted d-block mb-2">Ngày: <?= $r['created_at'] ?></small>
                     <div class="mt-2 d-flex gap-2">
                         <button class="btn btn-warning btn-sm"
-                            onclick="openEditModal(<?= $r['review_id'] ?>, <?= $r['rating'] ?>, `<?= htmlspecialchars($r['comment'], ENT_QUOTES) ?>`)">✏
+                            onclick="openEditModal(<?= $r['review_id'] ?>, <?= $r['rating'] ?>, `<?= htmlspecialchars($r['comment'], ENT_QUOTES) ?>`)">
                             Sửa</button>
                         <a href="?delete_review=<?= $r['review_id'] ?>" onclick="return confirm('Xóa đánh giá này?')"
-                            class="btn btn-danger btn-sm">🗑 Xóa</a>
+                            class="btn btn-danger btn-sm">Xóa</a>
                     </div>
                 </div>
             </div>

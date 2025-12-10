@@ -14,7 +14,7 @@
         $result2 = null; 
     } else {
          $cart_id = $result->fetch_assoc()["id"];
-         $sql2 = "SELECT ci.product_id,ci.quantity,p.brand,p.model,p.image,p.price
+         $sql2 = "SELECT ci.product_id,ci.quantity,p.brand,p.model,p.image,p.price,p.color
                   FROM cart_items ci 
                   JOIN products p ON ci.product_id = p.id 
                   WHERE ci.cart_id = $cart_id";
@@ -73,13 +73,7 @@
 </head>
 
 <body class="bg-light">
-
-    <?php include __DIR__ . "/../includes/header.php"; ?>
-
     <div class="app-container">
-        <div class="mb-3">
-            <a href="dashboard.php" class="btn btn-secondary btn-sm">← Quay lại</a>
-        </div>
         <h2 class="page-title mb-4">Giỏ hàng của bạn</h2>
 
         <!-- Desktop Table View -->
@@ -91,6 +85,7 @@
                         <th>Tên Sản phẩm</th>
                         <th>Số lượng</th>
                         <th>Giá</th>
+                        <th>Màu</th>
                         <th>Tổng</th>
                         <th></th>
                     </tr>
@@ -109,6 +104,7 @@
                         <td><?= $row["brand"] . " " . $row["model"] ?></td>
                         <td><?= $row["quantity"] ?></td>
                         <td><?= number_format($row["price"]) ?>₫</td>
+                        <td><?= $row["color"] ?></td>
                         <td><?= number_format($subtotal) ?>₫</td>
                         <td>
                             <a href="cart_item.php?action=delete&id=<?= $row['product_id'] ?>"
@@ -146,6 +142,7 @@
                         <div class="card-body p-3">
                             <h6 class="card-title mb-2"><?= $row["brand"] . " " . $row["model"] ?></h6>
                             <p class="mb-2 small">Số lượng: <strong><?= $row["quantity"] ?></strong></p>
+                            <p class="mb-2 small">Màu: <strong><?= $row["color"] ?></strong></p>
                             <p class="mb-2 small">Giá: <strong><?= number_format($row["price"]) ?>₫</strong></p>
                             <p class="mb-3 text-danger fw-bold">Tổng: <?= number_format($subtotal) ?>₫</p>
                             <a href="cart_item.php?action=delete&id=<?= $row['product_id'] ?>"
@@ -172,9 +169,8 @@
                     </div>
                     <div class="col-12 col-md-6 mt-3 mt-md-0">
                         <div class="d-flex gap-2 flex-column flex-md-row">
-                            <a href="dashboard.php" class="btn btn-secondary btn-sm flex-grow-1">← Quay lại</a>
-                            <a href="orders.php?action=checkout" class="btn btn-success btn-sm flex-grow-1">Đặt hàng
-                                →</a>
+                            <a href="dashboard.php" class="btn btn-secondary btn-sm flex-grow-1">Quay lại</a>
+                            <a href="orders.php?action=checkout" class="btn btn-success btn-sm flex-grow-1">Đặt hàng</a>
                         </div>
                     </div>
                 </div>

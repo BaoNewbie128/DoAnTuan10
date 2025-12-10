@@ -1,11 +1,16 @@
-<?php include __DIR__ . "/../includes/auth_check.php"; 
-    require_once __DIR__ . "/../config/db.php";
-    $products =[];
-    $error_message ="";
-    $unique_brands = [];
-    function format_currency($amount) {
+<?php
+ob_start();
+include __DIR__ . "/../includes/auth_check.php";
+require_once __DIR__ . "/../config/db.php";
+
+$products = [];
+$unique_brands = [];
+$error_message = "";
+
+function format_currency($amount) {
     return number_format($amount, 0, ',', '.') . '₫';
 }
+
 function truncate_description($text, $limit = 100) {
     if (strlen($text) > $limit) {
         $text = substr($text, 0, $limit);
@@ -14,26 +19,73 @@ function truncate_description($text, $limit = 100) {
     }
     return $text;
 }
-$search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search']) : '';
-    $filter_brand = isset($_GET['brand']) ? $conn->real_escape_string($_GET['brand']) : '';
-    $where_clauses = [];
-    if (!empty($search_query)) {
-        $where_clauses[] = "(brand LIKE '%$search_query%' OR model LIKE '%$search_query%')";
-    }
-    if (!empty($filter_brand) && $filter_brand !== 'all') {
-        $where_clauses[] = "brand = '$filter_brand'";
-    }
 
-    $where_sql = count($where_clauses) > 0 ? ' WHERE ' . implode(' AND ', $where_clauses) : '';
-    
-    $sql = "SELECT id, brand, model, scale, price, stock, image, description FROM products " . $where_sql . "ORDER BY id DESC";
+$search_query = isset($_GET['search']) ? $conn->real_escape_string(trim($_GET['search'])) : '';
+$filter_brand = isset($_GET['brand']) ? $conn->real_escape_string(trim($_GET['brand'])) : '';
+
+$where_clauses = [];
+if ($search_query !== '') {
+    // Tìm theo brand, model, description, image, color
+    $s = $conn->real_escape_string($search_query);
+    $where_clauses[] = "(
+        brand LIKE '%$s%'
+        OR model LIKE '%$s%'
+        OR description LIKE '%$s%'
+        OR image LIKE '%$s%'
+        OR color LIKE '%$s%'
+    )";
+}
+if ($filter_brand !== '' && $filter_brand !== 'all') {
+    $b = $conn->real_escape_string($filter_brand);
+    $where_clauses[] = "brand = '$b'";
+}
+
+$where_sql = count($where_clauses) ? 'WHERE ' . implode(' AND ', $where_clauses) : '';
+
+// GROUP_CONCAT với separator '||' để tránh vấn đề dữ liệu có dấu phẩy
+$sql = "
+SELECT
+    GROUP_CONCAT(id ORDER BY id SEPARATOR '||') AS ids,
+    brand,
+    GROUP_CONCAT(color ORDER BY id SEPARATOR '||') AS colors,
+    model,
+    scale,
+    MIN(price) AS price, -- show min price for group
+    GROUP_CONCAT(stock ORDER BY id SEPARATOR '||') AS stocks,
+    GROUP_CONCAT(image ORDER BY id SEPARATOR '||') AS images,
+    description
+FROM products
+{$where_sql}
+GROUP BY brand, model, scale, description
+ORDER BY MIN(id) DESC
+";
+
 $result = $conn->query($sql);
+
 if ($result === FALSE) {
-    $error_message = '<div class="alert alert-danger text-center">Lỗi truy vấn: ' . $conn->error . '</div>';
+    $error_message = '<div class="alert alert-danger text-center">Lỗi truy vấn: ' . htmlspecialchars($conn->error) . '</div>';
 } else {
     if ($result->num_rows > 0) {
-        while($row = $result->fetch_assoc()) {
+        while ($row = $result->fetch_assoc()) {
+            // defensive: nếu field null -> set empty string
+            $row['ids']    = $row['ids'] ?? '';
+            $row['colors'] = $row['colors'] ?? '';
+            $row['images'] = $row['images'] ?? '';
+            $row['stocks'] = $row['stocks'] ?? '';
+
+            // tách các danh sách
+            $row['ids_list']    = $row['ids'] === '' ? [] : explode('||', $row['ids']);
+            $row['colors_list'] = $row['colors'] === '' ? [] : explode('||', $row['colors']);
+            $row['images_list'] = $row['images'] === '' ? [] : explode('||', $row['images']);
+            $row['stocks_list'] = $row['stocks'] === '' ? [] : explode('||', $row['stocks']);
+
+            // cover image = hình đầu tiên nếu có, else placeholder
+            $row['image_cover'] = count($row['images_list']) ? $row['images_list'][0] : 'placeholder.png';
+
+            // push product
             $products[] = $row;
+
+            // unique brands
             if (!in_array($row['brand'], $unique_brands)) {
                 $unique_brands[] = $row['brand'];
             }
@@ -41,9 +93,7 @@ if ($result === FALSE) {
     }
     $result->free();
 }
-$conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 
@@ -57,17 +107,20 @@ $conn->close();
 </head>
 
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-        <div class="container">
-            <div>
-                <p class="m-4 text-white">Chào <strong><?php echo htmlspecialchars($_SESSION["username"]); ?></strong>
-                </p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" style="color: aqua; font-size: 1.3rem;" href="dashboard.php">JDM World</a>
+            <div class="d-lg-none ms-auto me-2 text-white small">
+                <span><?= htmlspecialchars($_SESSION["username"] ?? '') ?></span>
             </div>
-            <a class="navbar-brand fw-bold" style="color: aqua;" href="dashboard.php">JDM World</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="d-none d-lg-flex ms-3 me-3 text-white align-items-center">
+                    <span>Chào <strong><?= htmlspecialchars($_SESSION["username"] ?? '') ?></strong></span>
+                </div>
+
                 <ul class="navbar-nav me-3">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle btn btn-secondary btn-sm text-white" href="#"
@@ -76,93 +129,172 @@ $conn->close();
                             <?= !empty($filter_brand) && $filter_brand !== 'all' ? htmlspecialchars($filter_brand) : 'Tất cả' ?>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item"
-                                    href="?search=<?= htmlspecialchars($search_query) ?>&brand=all">Tất cả</a></li>
+                            <li><a class="dropdown-item" href="?search=<?= urlencode($search_query) ?>&brand=all">Tất
+                                    cả</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <?php foreach ($unique_brands as $brand): ?>
                             <li><a class="dropdown-item"
-                                    href="?search=<?= htmlspecialchars($search_query) ?>&brand=<?= urlencode($brand) ?>"><?= htmlspecialchars($brand) ?></a>
-                            </li>
+                                    href="?search=<?= urlencode($search_query) ?>&brand=<?= urlencode($brand) ?>">
+                                    <?= htmlspecialchars($brand) ?>
+                                </a></li>
                             <?php endforeach; ?>
                         </ul>
                     </li>
                 </ul>
 
-                <form class="d-flex me-3" method="GET">
+                <form class="d-flex flex-column flex-lg-row me-3 mb-2 mb-lg-0 w-100 w-lg-auto" method="GET">
                     <input type="hidden" name="brand" value="<?= htmlspecialchars($filter_brand) ?>">
-                    <input class="form-control me-2" type="search" placeholder="Tìm tên xe/hãng/màu" aria-label="Search"
-                        name="search" value="<?= htmlspecialchars($search_query) ?>">
+                    <input class="form-control me-lg-2 mb-2 mb-lg-0" type="search" placeholder="Tìm tên xe/hãng/màu"
+                        aria-label="Search" name="search" value="<?= htmlspecialchars($search_query) ?>">
                     <button class="btn btn-outline-light" type="submit">Tìm</button>
                 </form>
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link" href="dashboard.php">Trang chủ</a></li>
-                    <li class="nav-item"><a class="nav-link" href="cart_item.php">Giỏ hàng</a></li>
-                    <li class="nav-item"><a class="nav-link" href="order_items.php">Đơn hàng</a></li>
-                    <li class="nav-item"><a class="nav-link text-danger" href="/logout.php">Đăng xuất</a></li>
+
+                <ul class="navbar-nav ms-lg-auto">
+                    <li class="nav-item"><a class="nav-link" href="dashboard.php"><img src="../images/home.png"
+                                class="home-img" alt="trang chủ">Trang chủ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="cart_item.php"><img src="../images/cart.png"
+                                class="cart-img" alt="giỏ hàng">Giỏ hàng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="order_items.php"><img src="../images/order.png"
+                                class="order-img" alt="đơn hàng">Đơn hàng</a></li>
+                    <li class="nav-item"><a class="nav-link" href="dashboard.php?view=profile"><img
+                                src="../images/profile.png" class="profile-img" alt="hồ sơ cá nhân">Hồ sơ</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" href="/logout.php"><img
+                                src="../images/logout.png" alt="đăng xuất">Đăng xuất</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="app-container container">
-        <div class="d-flex justify-content-between align-items-center mb-3">
 
+    <div class="app-container">
+        <?php
+    if (isset($_GET["view"]) && $_GET["view"] === "profile") {
+        include __DIR__ . "/profile.php";
+    } elseif (isset($_GET["view"]) && $_GET["view"] === "edit-profile") {
+        include __DIR__ . "/edit_profile.php";
+    } else { ?>
+        <div class="mb-3">
             <h2 class="mb-0 fw-bold page-title">Các mô hình xe JDM</h2>
         </div>
-        <?= $error_message ?>
-        <div class="row" id="productList">
-            <?php
-                if (!empty($products)):
-            foreach ($products as $p):
-                
-                $price = format_currency($p['price']);
-                $image_path = htmlspecialchars($p['image']); 
-                $full_name = htmlspecialchars($p['brand']) . ' ' . htmlspecialchars($p['model']);
-                $short_description = truncate_description($p['description'], 100);
-                $modal_id = 'modal-' . $p['id'];
-            ?>
 
+        <?= $error_message ?>
+
+        <div class="row g-3" id="productList">
+            <?php if (!empty($products)): ?>
+            <?php foreach ($products as $p): 
+                    // bảo đảm các key tồn tại
+                    $price = format_currency($p['price'] ?? 0);
+                    $image_path = htmlspecialchars($p['image_cover'] ?? 'placeholder.png');
+                    $full_name = htmlspecialchars(($p['brand'] ?? '') . ' ' . ($p['model'] ?? ''));
+                    $short_description = truncate_description($p['description'] ?? '', 20);
+
+                    // id dùng cho modal (lấy id đầu tiên nếu có)
+                    $first_id = isset($p['ids_list'][0]) ? $p['ids_list'][0] : '0';
+                    $modal_id = 'modal-' . preg_replace('/[^a-zA-Z0-9_-]/', '_', $first_id);
+                ?>
             <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                 <div class="card shadow-sm h-100">
                     <img src="../images/<?= $image_path ?>" class="card-img-top product-img" alt="<?= $full_name ?>">
                     <div class="card-body">
                         <h5 class="card-title"><?= $full_name ?></h5>
-                        <p class="card-text text-muted">Tỉ lệ: <?= htmlspecialchars($p['scale']) ?></p>
-                        <p class="card-text text-muted"> <?php 
-                        if($p['stock'] > 0){
-                             echo "Số lượng:". htmlspecialchars($p['stock']) ;
-                        } else {
-                            echo "Hết hàng";}
-                           ?></p>
-                        <p class="fw-bold text-danger"><?= $price ?></p>
-                        <p class="card-text small mb-2">
-                            <strong>Chi tiết về xe:</strong> <?= $short_description ?>
+                        <p class="card-text text-muted">Tỉ lệ: <?= htmlspecialchars($p['scale'] ?? '') ?></p>
 
-                            <?php if (strlen($p['description']) > 100): ?>
+                        <?php
+                                // tính tổng stock hiển thị (sum stocks_list)
+                                $total_stock = 0;
+                                if (!empty($p['stocks_list'])) {
+                                    foreach ($p['stocks_list'] as $s) {
+                                        $total_stock += intval($s);
+                                    }
+                                }
+                            ?>
+                        <p class="card-text text-muted">
+                            <?= $total_stock > 0 ? 'Số lượng: ' . htmlspecialchars($total_stock) : '<span class="text-danger">Hết hàng</span>' ?>
+                        </p>
+
+                        <p class="fw-bold text-danger"><?= $price ?></p>
+
+                        <p class="card-text small mb-2">
+                            <strong>Chi tiết về xe:</strong> <?= htmlspecialchars($short_description) ?>
+                            <?php if (strlen($p['description'] ?? '') > 20): ?>
                             <a href="#" class="text-primary text-decoration-none fw-bold" data-bs-toggle="modal"
-                                data-bs-target="#<?= $modal_id ?>">
-                                Xem thêm
-                            </a>
+                                data-bs-target="#<?= $modal_id ?>"> Xem thêm</a>
                             <?php endif; ?>
                         </p>
-                        <a href="cart_add.php?product_id=<?= $p['id'] ?>" class="btn btn-primary w-100">Thêm vào giỏ
-                            hàng</a>
-                        <a href="reviews.php?product_id=<?= $p['id'] ?>" class="btn btn-secondary w-100 mt-2">Xem đánh
+
+                        <!-- nút mở modal chọn màu -->
+                        <button class="btn btn-primary w-100 mb-2" data-bs-toggle="modal"
+                            data-bs-target="#chooseColor<?= $first_id ?>">
+                            Thêm vào giỏ hàng
+                        </button>
+                        <a href="reviews.php?product_id=<?= $first_id ?>" class="btn btn-secondary w-100">Xem đánh
                             giá</a>
                     </div>
                 </div>
             </div>
+
+            <!-- Modal chọn màu -->
+            <div class="modal fade" id="chooseColor<?= $first_id ?>" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form action="cart_add.php" method="GET">
+                            <div class="modal-header">
+                                <h5 class="modal-title"><?= $full_name ?></h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <?php if (!empty($p['colors_list'])): ?>
+                                <?php foreach ($p['colors_list'] as $index => $color): 
+                                            $pid = $p['ids_list'][$index] ?? null;
+                                            $stock = isset($p['stocks_list'][$index]) ? intval($p['stocks_list'][$index]) : 0;
+                                            $img = isset($p['images_list'][$index]) ? $p['images_list'][$index] : $p['image_cover'];
+                                            if ($pid === null) continue;
+                                        ?>
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="radio" name="product_id"
+                                            value="<?= htmlspecialchars($pid) ?>" id="opt<?= htmlspecialchars($pid) ?>"
+                                            <?= $index === 0 ? 'required' : '' ?>>
+                                    </div>
+                                    <div class="me-3" style="width:64px;height:48px">
+                                        <img src="../images/<?= htmlspecialchars($img) ?>"
+                                            alt="<?= htmlspecialchars($color) ?>"
+                                            style="max-width:100%;height:100%;object-fit:cover;">
+                                    </div>
+                                    <div>
+                                        <label for="opt<?= htmlspecialchars($pid) ?>"
+                                            class="form-label mb-0"><?= htmlspecialchars($color) ?></label>
+                                        <div class="small text-muted">Còn: <?= $stock ?></div>
+                                    </div>
+                                </div>
+                                <?php endforeach; ?>
+                                <?php else: ?>
+                                <div class="alert alert-info">Không có tuỳ chọn màu cho sản phẩm này.</div>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="modal-footer">
+                                <input type="hidden" name="choose" value="1">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="submit" class="btn btn-success">Thêm vào giỏ</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal chi tiết mô tả -->
             <div class="modal fade" id="<?= $modal_id ?>" tabindex="-1" aria-labelledby="<?= $modal_id ?>Label"
                 aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="<?= $modal_id ?>Label">Chi tiết về xe: <?= $full_name ?></h5>
+                            <h5 class="modal-title" id="<?= $modal_id ?>Label"><?= $full_name ?></h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <?= nl2br(htmlspecialchars($p['description'])) ?>
+                            <?= nl2br(htmlspecialchars($p['description'] ?? '')) ?>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -170,11 +302,21 @@ $conn->close();
                     </div>
                 </div>
             </div>
-            <?php endforeach; 
-            else:?>
-            <?php endif;?>
+
+            <?php endforeach; ?>
+            <?php else: ?>
+            <div class="col-12">
+                <div class="alert alert-info">Không có sản phẩm nào phù hợp.</div>
+            </div>
+            <?php endif; ?>
         </div>
+
+        <?php } // end else view ?>
     </div>
+
+    <?php include __DIR__ . "/../includes/footer.php"; ?>
+
 </body>
 
 </html>
+<?php ob_end_flush(); ?>

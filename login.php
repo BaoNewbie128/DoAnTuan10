@@ -43,14 +43,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="/assets/css/style.css">
     <title>Đăng nhập - JDM World</title>
     <style>
-        .login-container {
-            min-height: calc(100vh - 200px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, rgba(26,26,46,0.8) 0%, rgba(22,33,62,0.8) 100%), url('images/BackGround.jpg') center/cover no-repeat;
-            padding: 15px;
-        }
+    .login-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(26, 26, 46, 0.8) 0%, rgba(22, 33, 62, 0.8) 100%), url('images/BackGround.jpg') center/cover no-repeat;
+        padding: 15px;
+    }
     </style>
 </head>
 
@@ -77,7 +77,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             placeholder="Nhập mật khẩu" required>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Đăng nhập</button>
-                    <a href="index.php" class="btn btn-outline-secondary w-100 mt-3 py-2">← Quay lại</a>
+                    <p class="mt-2">Bạn chưa có tài khoản ? <a class="text-decoration-none" href="register.php">Đăng ký
+                            tại đây</a></p>
+                    <a href="index.php" class="btn btn-outline-secondary w-100 mt-2 py-2"> Quay lại</a>
+                    <p>Tài khoản admin: <strong>baobao </strong> password: <strong>12345678 </strong> </p>
+                    <p>Tài khoản user: <strong>nganngan </strong> password: <strong>12345678 </strong> </p>
                 </form>
             </div>
         </div>

@@ -3,14 +3,24 @@ include  "config/db.php";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $username = trim($_POST["username"]);
-    $email = trim($_POST["email"]);
-    $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
-    $phone = trim($_POST["phone"]);
-    $address = trim($_POST["address"]);
+    $username = trim($_POST["username"]?? "");
+    $email = trim($_POST["email"] ?? "");
+    $password = ($_POST["password"] ?? "");
+    $phone = trim($_POST["phone"] ?? "");
+    $address = trim($_POST["address"] ?? "");
     $role = "customer"; // mặc định khách hàng
-
-    // kiểm tra email/username trùng
+    if ($username ==="" || $email ==="" || $password==="") {
+        $error = "Vui lòng nhập đầy đủ thông tin!";
+    }
+    // Kiểm tra định dạng email
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Email không đúng định dạng!";
+    }
+    // Kiểm tra độ dài mật khẩu
+    elseif (strlen($password) < 6) {
+        $error = "Mật khẩu phải có ít nhất 6 ký tự!";
+    }else{
+ // kiểm tra email/username trùng
     $check = $conn->prepare("SELECT id FROM users WHERE email = ? OR username = ?");
     $check->bind_param("ss", $email, $username);
     $check->execute();
@@ -19,17 +29,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($exists->num_rows > 0) {
         $error = "Email hoặc Username đã tồn tại!";
     } else {
+        $password_hashed = password_hash($password,PASSWORD_DEFAULT);
         $sql = "INSERT INTO users (username, email, password, phone, address, role) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssss", $username, $email, $password, $phone, $address, $role);
+        $stmt->bind_param("ssssss", $username, $email, $password_hashed, $phone, $address, $role);
 
         if ($stmt->execute()) {
             header("Location: login.php?registered=1");
             exit;
         } else {
             $error = "Đăng ký thất bại: " . $conn->error;
+            }
         }
-    }
+    } 
 }
 ?>
 <!DOCTYPE html>
@@ -91,7 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             rows="3"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Đăng ký</button>
-                    <a href="index.php" class="btn btn-outline-secondary w-100 mt-3 py-2">← Quay lại</a>
+                    <a href="index.php" class="btn btn-outline-secondary w-100 mt-3 py-2"> Quay lại</a>
                 </form>
             </div>
         </div>

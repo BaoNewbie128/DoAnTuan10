@@ -31,6 +31,11 @@ body{
 nav a.nav-btn{color:#fff; font-weight:600; text-decoration:none;margin: 8px; padding:8px 14px; border-radius:6px; border:1px solid rgba(255,255,255,0.12); background:rgba(255,255,255,0.03); transition:all .18s ease}
 nav a.nav-btn:hover{background:var(--primary); color:#000; transform:translateY(-1px)}
 nav a.primary-cta{background:var(--primary); color:#000; border-color:var(--primary)}
+.profile-img{height: 20px; width: 20px;color: #ddd;}
+.home-img{height: 20px; width: 20px;color: #ddd;}
+.cart-img{height: 20px; width: 20px;}
+.order-img{height: 20px; width: 20px;}
+
 aside nav a.nav-btn {
     color: #333 !important;
     background: transparent;
@@ -111,6 +116,11 @@ footer.site-footer{padding:18px 12px; background:#fff; border-top:1px solid #ece
     footer.site-footer{padding:12px 8px}
     .card p{margin-bottom:8px}
     h1,h2,h3,h4,h5,h6{margin-bottom:8px}
+    /* Mobile navbar optimization */
+    .navbar-brand{font-size:1.1rem !important;}
+    .nav-link{font-size:0.95rem; padding:0.5rem 0.75rem !important;}
+    .form-control{margin-bottom:8px;}
+    .modal-dialog{margin:0 8px;}
 }
 
 @media (max-width:400px){
