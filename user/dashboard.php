@@ -109,7 +109,8 @@ if ($result === FALSE) {
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
         <div class="container-fluid">
-            <a class="navbar-brand fw-bold" style="color: aqua; font-size: 1.3rem;" href="dashboard.php">JDM World</a>
+            <a class="navbar-brand fw-bold" style="color: aqua; font-size: 1.3rem;" href="dashboard.php">JDM World <img
+                    src="../images/drift-car.png" class="jdm-img" alt="jdm world"></a>
             <div class="d-lg-none ms-auto me-2 text-white small">
                 <span><?= htmlspecialchars($_SESSION["username"] ?? '') ?></span>
             </div>
@@ -144,24 +145,25 @@ if ($result === FALSE) {
                     </li>
                 </ul>
 
-                <form class="d-flex flex-column flex-lg-row me-3 mb-2 mb-lg-0 w-100 w-lg-auto" method="GET">
+                <form class="d-flex flex-column flex-lg-row me-3 mb-2 mb-lg-0 w-20 w-lg-auto" method="GET">
                     <input type="hidden" name="brand" value="<?= htmlspecialchars($filter_brand) ?>">
-                    <input class="form-control me-lg-2 mb-2 mb-lg-0" type="search" placeholder="Tìm tên xe/hãng/màu"
-                        aria-label="Search" name="search" value="<?= htmlspecialchars($search_query) ?>">
+                    <input style="flex: 1 1 auto; min-width: 150px;border-radius: 5px;" type="search"
+                        placeholder="Tìm tên xe/hãng" aria-label="Search" name="search"
+                        value="<?= htmlspecialchars($search_query) ?>">
                     <button class="btn btn-outline-light" type="submit">Tìm</button>
                 </form>
 
                 <ul class="navbar-nav ms-lg-auto">
                     <li class="nav-item"><a class="nav-link" href="dashboard.php"><img src="../images/home.png"
-                                class="home-img" alt="trang chủ">Trang chủ</a></li>
+                                class="home-img" alt="trang chủ"> Trang chủ</a></li>
                     <li class="nav-item"><a class="nav-link" href="cart_item.php"><img src="../images/cart.png"
-                                class="cart-img" alt="giỏ hàng">Giỏ hàng</a></li>
+                                class="cart-img" alt="giỏ hàng"> Giỏ hàng</a></li>
                     <li class="nav-item"><a class="nav-link" href="order_items.php"><img src="../images/order.png"
-                                class="order-img" alt="đơn hàng">Đơn hàng</a></li>
+                                class="order-img" alt="đơn hàng"> Đơn hàng</a></li>
                     <li class="nav-item"><a class="nav-link" href="dashboard.php?view=profile"><img
-                                src="../images/profile.png" class="profile-img" alt="hồ sơ cá nhân">Hồ sơ</a></li>
+                                src="../images/profile.png" class="profile-img" alt="hồ sơ cá nhân"> Hồ sơ</a></li>
                     <li class="nav-item"><a class="nav-link text-danger" href="/logout.php"><img
-                                src="../images/logout.png" alt="đăng xuất">Đăng xuất</a></li>
+                                src="../images/logout.png" alt="đăng xuất"> Đăng xuất</a></li>
                 </ul>
             </div>
         </div>
@@ -313,9 +315,6 @@ if ($result === FALSE) {
 
         <?php } // end else view ?>
     </div>
-
-    <?php include __DIR__ . "/../includes/footer.php"; ?>
-
 </body>
 
 </html>

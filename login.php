@@ -81,7 +81,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             tại đây</a></p>
                     <a href="index.php" class="btn btn-outline-secondary w-100 mt-2 py-2"> Quay lại</a>
                     <p>Tài khoản admin: <strong>baobao </strong> password: <strong>12345678 </strong> </p>
-                    <p>Tài khoản user: <strong>nganngan </strong> password: <strong>12345678 </strong> </p>
+                    <p>Tài khoản user: <strong>tientien </strong> password: <strong>123456789 </strong> </p>
                 </form>
             </div>
         </div>

@@ -28,6 +28,7 @@
 ?>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -35,6 +36,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
+
 <body class="bg-light">
     <div class="app-container">
         <div class="mb-3">
@@ -47,7 +49,7 @@
         <?php if(!empty($error_message)): ?>
         <div class="alert alert-danger"><?= $error_message ?></div>
         <?php endif; ?>
-        
+
         <div class="card p-4 shadow-sm" style="max-width: 700px;">
             <form method="POST" enctype="multipart/form-data">
                 <div class="mb-3">
@@ -95,6 +97,6 @@
             </form>
         </div>
     </div>
-    <?php include __DIR__ . "/../includes/footer.php"; ?>
 </body>
+
 </html>

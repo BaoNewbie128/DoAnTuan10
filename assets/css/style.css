@@ -35,7 +35,8 @@ nav a.primary-cta{background:var(--primary); color:#000; border-color:var(--prim
 .home-img{height: 20px; width: 20px;color: #ddd;}
 .cart-img{height: 20px; width: 20px;}
 .order-img{height: 20px; width: 20px;}
-
+.jdm-img{height:40px; width: 40px;}
+.index-img{height:70px; width: 70px;}
 aside nav a.nav-btn {
     color: #333 !important;
     background: transparent;
@@ -64,7 +65,29 @@ aside nav a.nav-btn:hover {
 .btn{border-radius:8px}
 
 /* Footer */
-footer.site-footer{padding:18px 12px; background:#fff; border-top:1px solid #eceff3; text-align:center; color:var(--muted);}
+footer.site-footer{padding:18px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.12); text-align:center;}
+.transparent-footer {
+    background: rgba(26,26,46,0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 -6px 18px rgba(0,0,0,0.12);
+    color: #fff;
+    padding: 18px 12px;
+    text-align: left; /* FIX */
+}
+.footer-grid {
+    display: flex;
+    justify-content: flex-start; /* Canh trái */
+    gap: 160px; /* giữ khoảng cách giữa 2 cột */
+    align-items: flex-start;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.footer-bottom{
+    /* text-align: center; */
+    padding-left: 20px;
+}
+
 
 /* Small helpers */
 .muted{color:var(--muted)}

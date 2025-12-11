@@ -6,7 +6,7 @@
         exit;
     }
     $user_id = $_SESSION["user_id"];
-     $sql = "SELECT id,total,status,created_at FROM orders WHERE user_id = $user_id ORDER BY id DESC";
+     $sql = "SELECT id,total,status,created_at FROM orders WHERE user_id = $user_id AND status NOT IN ('cancelled') ORDER BY id DESC";
     $orders=$conn->query($sql);
     $orderlist = [];
     if($orders && $orders->num_rows >0){
@@ -40,6 +40,14 @@
                 $_SESSION['message'] = "Lỗi khi hủy đơn hàng" . $conn->error;
             }
         }
+        if($action == 'paid'){
+    $sql_paid = "UPDATE orders SET status = 'paid' WHERE id = $order_id";
+    if($conn->query($sql_paid) === true){
+        $_SESSION['message'] = "Thanh toán thành công!";
+    } else {
+        $_SESSION['message'] = "Lỗi khi cập nhật thanh toán.";
+    }
+}
      header("Location: order_items.php");
     exit; 
     } 
@@ -68,7 +76,15 @@
         <?php
                 $order = $orderData['order'];
                 $items = $orderData['items'];
-                $total = 0;
+                 $total = 0;
+            if($items && $items->num_rows > 0){
+                $items->data_seek(0);
+                while($r = $items->fetch_assoc()){
+                    $total += (float)$r['price'] * (int)$r['quantity'];
+                }
+                // reset pointer để sau này render lại list
+                $items->data_seek(0);
+            }
                 $statusTrans = [
                     'pending' => 'Chưa xử lý',
                     'paid' => 'Đã thanh toán',
@@ -98,9 +114,10 @@
                         </thead>
                         <tbody>
                             <?php if($items->num_rows >0):?>
-                            <?php while($row = $items->fetch_assoc()):
+
+                            <?php
+                             while($row = $items->fetch_assoc()):
                             $subtotal = $row["price"] * $row["quantity"];
-                            $total += $subtotal;
                             ?>
                             <tr>
                                 <td width="120"><img src="../images/<?= $row['image'] ?>" width="100"
@@ -131,7 +148,6 @@
                     <?php if($items->num_rows >0):?>
                     <?php while($row = $items->fetch_assoc()):
                     $subtotal = $row["price"] * $row["quantity"];
-                    $total += $subtotal;
                     ?>
                     <div class="mb-3 pb-3 border-bottom">
                         <div class="row g-2">
@@ -149,6 +165,7 @@
                         </div>
                     </div>
                     <?php endwhile; ?>
+
                     <div class="mt-3 pt-2 border-top">
                         <h6 class="text-end">Tổng cộng: <span
                                 class="text-danger fw-bold"><?= number_format($total) ?>₫</span></h6>
@@ -163,6 +180,36 @@
                     onclick="return confirm('Bạn muốn hủy đơn hàng này?');">
                     Hủy đơn hàng
                 </a>
+                <?php if($order['status'] !== 'paid'): ?>
+                <button class="btn btn-success btn-sm w-20" onclick="toggleQR(<?= $order['id'] ?>, <?= $total ?>)">
+                    Thanh Toán
+                </button>
+                <?php elseif($order['status'] === 'paid'): ?>
+                <p class="text-success fw-bold d-inline-block m-0">Đã thanh toán</p>
+                <?php elseif($order['status'] === 'shipping'): ?>
+                <p class="text-success fw-bold d-inline-block m-0">Đang giao hàng </p>
+                <?php elseif($order['status'] === 'completed'): ?>
+                <p class="text-success fw-bold d-inline-block m-0">Đã nhận hàng </p>
+                <?php endif; ?>
+                <!-- Toggle QR -->
+
+                <div id="qr_box_<?= $order['id'] ?>" class="mt-3 p-3 bg-white border rounded d-none">
+                    <h6>Quét mã để thanh toán</h6>
+                    <p>Số tiền: <strong class="text-danger"><?= number_format($total) ?>₫</strong></p>
+
+                    <img src="../images/qr_thanhtoan.jpg" width="250" class="border rounded">
+
+                    <div class="mt-3">
+                        <button class="btn btn-primary btn-sm" onclick="confirmPayment(
+                        <?= $order['id'] ?>
+                        )">
+                            Tôi đã thanh toán
+                        </button>
+                        <button class="btn btn-secondary btn-sm" onclick="toggleQR(<?= $order['id'] ?>)">
+                            Đóng
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
         <?php endforeach; ?>
@@ -171,6 +218,19 @@
             <a href="dashboard.php" class="btn btn-secondary">Quay lại</a>
         </div>
     </div>
+    <script>
+    function toggleQR(orderId, total = 0) {
+        const box = document.getElementById("qr_box_" + orderId);
+        box.classList.toggle("d-none");
+    }
+    // Gửi AJAX cập nhật trạng thái -> paid
+    function confirmPayment(orderId) {
+        if (!confirm("Xác nhận bạn đã thanh toán đơn hàng này?")) return;
+
+        fetch("order_items.php?action=paid&id=" + orderId)
+            .then(res => window.location.reload());
+    }
+    </script>
 
 </body>
 

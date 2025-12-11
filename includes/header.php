@@ -16,13 +16,14 @@ if (session_status() === PHP_SESSION_NONE) {
 
     <header class="transparent-header"
         style="padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-        <h1 class="brand-title" style="margin: 0; min-width: 140px;">JDM WORLD</h1>
+        <h1 class="brand-title" style="margin: 0; min-width: 140px;">JDM WORLD <img src="../images/drift-car.png"
+                class="jdm-img" alt="jdm world"></h1>
 
         <nav style="display: flex; gap: 6px; align-items: center; flex-wrap: wrap; flex: 1; justify-content: flex-end;">
 
 
             <?php if (!isset($_SESSION["user_id"])): ?>
-            <a href="/login.php" class="nav-btn" style="padding: 6px 10px; font-size: 0.9rem; margin: 0;"><img
+            <a href="/baitap/index.php" class="nav-btn" style="padding: 6px 10px; font-size: 0.9rem; margin: 0;"><img
                     src="../images/homework.png" alt="bài tập thực hành" class="profile-img">
                 Bài thực hành</a>
             <a href="/index.php" class="nav-btn" style="padding: 6px 10px; font-size: 0.9rem; margin: 0;">

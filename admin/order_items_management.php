@@ -174,9 +174,6 @@ $total_price = 0;
     <a href="admin_dashboard.php?view=orders" class="btn btn-secondary">Quay lại quản lý đơn hàng</a>
 </div>
 </div>
-
-<?php include __DIR__ . "/../includes/footer.php"; ?>
-
 </body>
 
 </html>
