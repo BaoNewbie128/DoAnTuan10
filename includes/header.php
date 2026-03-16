@@ -23,9 +23,6 @@ if (session_status() === PHP_SESSION_NONE) {
 
 
             <?php if (!isset($_SESSION["user_id"])): ?>
-            <a href="/baitap/index.php" class="nav-btn" style="padding: 6px 10px; font-size: 0.9rem; margin: 0;"><img
-                    src="../images/homework.png" alt="bài tập thực hành" class="profile-img">
-                Bài thực hành</a>
             <a href="/index.php" class="nav-btn" style="padding: 6px 10px; font-size: 0.9rem; margin: 0;">
                 <img src="../images/home.png" alt="trang chủ" class="profile-img"> Trang chủ</a>
             <a href="/login.php" class="nav-btn" style="padding: 6px 10px; font-size: 0.9rem; margin: 0;"><img

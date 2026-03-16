@@ -2,7 +2,17 @@
     require __DIR__ . "/../config/db.php";
     $orders = [];
     $error_message ="";
-    $sql = "SELECT o.id,u.username,o.total,o.status,o.created_at FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.id DESC";
+    $limit = 9;
+$page = isset($_GET['page']) ? max(1,intval($_GET['page'])) : 1;
+$offset = ($page -1) * $limit;
+$count_sql = "SELECT COUNT(*) as total FROM (
+    SELECT o.id 
+    FROM orders o JOIN users u ON o.user_id = u.id 
+    GROUP BY o.id) AS temp";
+    $count_result = $conn->query($count_sql);
+    $total_products = $count_result->fetch_assoc()['total'] ?? 0;
+    $total_pages = ceil($total_products / $limit);
+    $sql = "SELECT o.id,u.username,o.total,o.status,o.created_at FROM orders o JOIN users u ON o.user_id = u.id ORDER BY o.id DESC LIMIT $limit OFFSET $offset";
 $result = $conn->query($sql);
 if ($result === FALSE) {
     $error_message = '<div class="alert alert-danger text-center">Lỗi truy vấn: ' . $conn->error . '</div>';
@@ -43,4 +53,33 @@ $conn->close();
         </div>
     </div>
     <?php endforeach; ?>
+    <?php if ($total_pages > 1): ?>
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <!-- Nút trang trước -->
+            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                <a class="page-link" href="?view=orders&page=<?= $page-1 ?>">
+                    &laquo;
+                </a>
+            </li>
+
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                <a class="page-link" href="?view=orders&page=<?= $i ?>">
+                    <?= $i ?>
+                </a>
+            </li>
+            <?php endfor; ?>
+
+            <!-- Nút trang sau -->
+            <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                <a class="page-link" href="?view=orders&page=<?= $page+1 ?>">
+                    &raquo;
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+    <?php endif; ?>
 </div>

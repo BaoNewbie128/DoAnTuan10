@@ -6,6 +6,17 @@ require_once __DIR__ . "/../config/db.php";
        die("<div class='alert alert-danger text-center'>Bạn không có quyền truy cập trang này!</div>");
    }
     $message = "";
+     $limit = 9;
+$page = isset($_GET['page']) ? max(1,intval($_GET['page'])) : 1;
+$offset = ($page -1) * $limit;
+$count_sql = "SELECT COUNT(*) as total FROM (
+    SELECT r.id 
+    FROM reviews r JOIN users u ON r.user_id = u.id
+    JOIN products p ON r.product_id = p.id 
+    GROUP BY r.id) AS temp";
+    $count_result = $conn->query($count_sql);
+    $total_products = $count_result->fetch_assoc()['total'] ?? 0;
+    $total_pages = ceil($total_products / $limit);
     // read
     $sql = "SELECT r.id AS review_id,r.rating, r.comment, r.created_at, u.username,p.brand,p.model,p.image 
                     FROM reviews r 
@@ -25,6 +36,8 @@ require_once __DIR__ . "/../config/db.php";
         $sql_edit = "UPDATE reviews SET comment='$comment', rating=$rating WHERE id = $review_id";
         if($conn->query($sql_edit) === TRUE){
             $message = "<div class='alert alert-success text-center'>Đánh giá đã được cập nhật !</div>";
+             header("Location: ?view=reviews&page=$page");
+             exit();
         }else{
             $message = "<div class='alert alert-danger text-center'> Lỗi cập nhật ! </div> ";
         }
@@ -34,6 +47,8 @@ require_once __DIR__ . "/../config/db.php";
         $review_id = intval($_GET['delete_review']);
            if( $conn->query("DELETE FROM reviews WHERE id = $review_id")){
             $message = "<div class='alert alert-success text-center'>Đánh giá đã được xóa !</div>";
+            header("Location: ?view=reviews&page=$page");
+        exit();
         }else{
             $message = "<div class='alert alert-danger text-center'>Không thể xóa đánh giá này !</div>";
     }
@@ -53,7 +68,7 @@ $conn->close();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body class="bg-light">
+<div class="bg-light">
     <div class="app-container">
         <h2 class="page-title text-primary">Quản lý đánh giá</h2>
         <?= $message ?>
@@ -78,13 +93,44 @@ $conn->close();
                         <button class="btn btn-warning btn-sm"
                             onclick="openEditModal(<?= $r['review_id'] ?>, <?= $r['rating'] ?>, `<?= htmlspecialchars($r['comment'], ENT_QUOTES) ?>`)">
                             Sửa</button>
-                        <a href="?delete_review=<?= $r['review_id'] ?>" onclick="return confirm('Xóa đánh giá này?')"
-                            class="btn btn-danger btn-sm">Xóa</a>
+                        <a href="?view=reviews&delete_review=<?= $r['review_id'] ?>&page=<?= $page ?>"
+                            onclick="return confirm('Xóa đánh giá này?')" class="btn btn-danger btn-sm">
+                            Xóa
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
         <?php endwhile; ?>
+        <?php if ($total_pages > 1): ?>
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+
+                <!-- Nút trang trước -->
+                <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?view=reviews&page=<?= $page-1 ?>">
+                        &laquo;
+                    </a>
+                </li>
+
+                <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                    <a class="page-link" href="?view=reviews&page=<?= $i ?>">
+                        <?= $i ?>
+                    </a>
+                </li>
+                <?php endfor; ?>
+
+                <!-- Nút trang sau -->
+                <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                    <a class="page-link" href="?view=reviews&page=<?= $page+1 ?>">
+                        &raquo;
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+        <?php endif; ?>
         <?php else: ?>
         <div class="alert alert-info text-center">Chưa có đánh giá nào.</div>
         <?php endif; ?>
@@ -127,19 +173,19 @@ $conn->close();
 
                 </form>
             </div>
+        </div>
+    </div>
+    <script>
+    function openEditModal(id, rating, comment) {
+        document.getElementById('edit_review_id').value = id;
+        document.getElementById('edit_rating').value = rating;
+        document.getElementById('edit_comment').value = comment;
 
+        var modal = new bootstrap.Modal(document.getElementById('editReviewModal'));
+        modal.show();
+    }
+    </script>
 
-            <script>
-            function openEditModal(id, rating, comment) {
-                document.getElementById('edit_review_id').value = id;
-                document.getElementById('edit_rating').value = rating;
-                document.getElementById('edit_comment').value = comment;
-
-                var modal = new bootstrap.Modal(document.getElementById('editReviewModal'));
-                modal.show();
-            }
-            </script>
-
-</body>
+    </body>
 
 </html>

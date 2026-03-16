@@ -2,6 +2,15 @@
     require __DIR__ . "/../config/db.php";
     $products = [];
     $unique_brands = [];
+    // Lấy tất cả hãng xe để hiển thị dropdown
+$brand_sql = "SELECT DISTINCT brand FROM products ORDER BY brand";
+$brand_result = $conn->query($brand_sql);
+
+if ($brand_result && $brand_result->num_rows > 0) {
+    while ($row = $brand_result->fetch_assoc()) {
+        $unique_brands[] = $row['brand'];
+    }
+}
     $error_message ="";
 
     function format_currency($amount) {
@@ -27,7 +36,20 @@ $search_query = isset($_GET['search']) ? $conn->real_escape_string($_GET['search
 
     $where_sql = count($where_clauses) > 0 ? ' WHERE ' . implode(' AND ', $where_clauses) : '';
     
-    $sql = "SELECT id, brand, model, scale, price, stock, color, image, description FROM products " . $where_sql . "ORDER BY id DESC";
+    // Thêm phân trang( Tối đa 9 sản phẩm)
+$limit = 9;
+$page = isset($_GET['page']) ? max(1,intval($_GET['page'])) : 1;
+$offset = ($page -1) * $limit;
+$count_sql = "SELECT COUNT(*) as total FROM (
+    SELECT id 
+    FROM products 
+    {$where_sql}
+    GROUP BY brand,model,scale,description) AS temp";
+    $count_result = $conn->query($count_sql);
+    $total_products = $count_result->fetch_assoc()['total'] ?? 0;
+    $total_pages = ceil($total_products / $limit);
+    
+    $sql = "SELECT id, brand, model, scale, price, stock, color, image, description FROM products " . $where_sql . "ORDER BY id DESC LIMIT $limit OFFSET $offset";
 $result = $conn->query($sql);
 if ($result === FALSE) {
     $error_message = '<div class="alert alert-danger text-center">Lỗi truy vấn: ' . $conn->error . '</div>';
@@ -35,9 +57,9 @@ if ($result === FALSE) {
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
             $products[] = $row;
-            if (!in_array($row['brand'], $unique_brands)) {
-                $unique_brands[] = $row['brand'];
-            }
+            // if (!in_array($row['brand'], $unique_brands)) {
+            //     $unique_brands[] = $row['brand'];
+            // }
         }
     }
     $result->free();
@@ -50,7 +72,7 @@ $conn->close();
     <input type="hidden" name="view" value="products">
 
     <select name="brand" class="form-select" style="max-width:200px; flex: 1 1 auto; min-width: 120px;">
-        <option value="all">Tất cả hãng</option>
+        <option value="all">Tất cả</option>
         <?php foreach ($unique_brands as $b): ?>
         <option value="<?= $b ?>" <?= ($filter_brand==$b?"selected":"") ?>><?= $b ?></option>
         <?php endforeach; ?>
@@ -115,4 +137,36 @@ $conn->close();
         </div>
     </div>
     <?php endforeach;  ?>
+    <?php if ($total_pages > 1): ?>
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            <!-- Nút trang trước -->
+            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                <a class="page-link"
+                    href="?view=products&search=<?= urlencode($search_query) ?>&brand=<?= urlencode($filter_brand) ?>&page=<?= $page-1 ?>">
+                    &laquo;
+                </a>
+            </li>
+
+            <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+            <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                <a class="page-link"
+                    href="?view=products&search=<?= urlencode($search_query) ?>&brand=<?= urlencode($filter_brand) ?>&page=<?= $i ?>">
+                    <?= $i ?>
+                </a>
+            </li>
+            <?php endfor; ?>
+
+            <!-- Nút trang sau -->
+            <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                <a class="page-link"
+                    href="?view=products&search=<?= urlencode($search_query) ?>&brand=<?= urlencode($filter_brand) ?>&page=<?= $page+1 ?>">
+                    &raquo;
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+    <?php endif; ?>
 </div>

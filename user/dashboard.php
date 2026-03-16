@@ -5,6 +5,15 @@ require_once __DIR__ . "/../config/db.php";
 
 $products = [];
 $unique_brands = [];
+// Lấy tất cả hãng xe để hiển thị dropdown
+$brand_sql = "SELECT DISTINCT brand FROM products ORDER BY brand";
+$brand_result = $conn->query($brand_sql);
+
+if ($brand_result && $brand_result->num_rows > 0) {
+    while ($row = $brand_result->fetch_assoc()) {
+        $unique_brands[] = $row['brand'];
+    }
+}
 $error_message = "";
 
 function format_currency($amount) {
@@ -41,6 +50,18 @@ if ($filter_brand !== '' && $filter_brand !== 'all') {
 }
 
 $where_sql = count($where_clauses) ? 'WHERE ' . implode(' AND ', $where_clauses) : '';
+// Thêm phân trang( Tối đa 9 sản phẩm)
+$limit = 9;
+$page = isset($_GET['page']) ? max(1,intval($_GET['page'])) : 1;
+$offset = ($page -1) * $limit;
+$count_sql = "SELECT COUNT(*) as total FROM (
+    SELECT id 
+    FROM products 
+    {$where_sql}
+    GROUP BY brand,model,scale,description) AS temp";
+    $count_result = $conn->query($count_sql);
+    $total_products = $count_result->fetch_assoc()['total'] ?? 0;
+    $total_pages = ceil($total_products / $limit);
 
 // GROUP_CONCAT với separator '||' để tránh vấn đề dữ liệu có dấu phẩy
 $sql = "
@@ -58,6 +79,7 @@ FROM products
 {$where_sql}
 GROUP BY brand, model, scale, description
 ORDER BY MIN(id) DESC
+LIMIT $limit OFFSET $offset
 ";
 
 $result = $conn->query($sql);
@@ -86,9 +108,9 @@ if ($result === FALSE) {
             $products[] = $row;
 
             // unique brands
-            if (!in_array($row['brand'], $unique_brands)) {
-                $unique_brands[] = $row['brand'];
-            }
+            // if (!in_array($row['brand'], $unique_brands)) {
+            //     $unique_brands[] = $row['brand'];
+            // }
         }
     }
     $result->free();
@@ -130,13 +152,14 @@ if ($result === FALSE) {
                             <?= !empty($filter_brand) && $filter_brand !== 'all' ? htmlspecialchars($filter_brand) : 'Tất cả' ?>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="?search=<?= urlencode($search_query) ?>&brand=all">Tất
+                            <li><a class="dropdown-item <?= ($filter_brand == 'all' || $filter_brand == '') ? 'active' : '' ?>"
+                                    href="?search=<?= urlencode($search_query) ?>&brand=all">Tất
                                     cả</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <?php foreach ($unique_brands as $brand): ?>
-                            <li><a class="dropdown-item"
+                            <li><a class="dropdown-item <?= ($filter_brand == $brand) ? 'active' : '' ?>"
                                     href="?search=<?= urlencode($search_query) ?>&brand=<?= urlencode($brand) ?>">
                                     <?= htmlspecialchars($brand) ?>
                                 </a></li>
@@ -306,6 +329,38 @@ if ($result === FALSE) {
             </div>
 
             <?php endforeach; ?>
+            <?php if ($total_pages > 1): ?>
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+
+                    <!-- Nút trang trước -->
+                    <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                        <a class="page-link"
+                            href="?search=<?= urlencode($search_query) ?>&brand=<?= urlencode($filter_brand) ?>&page=<?= $page-1 ?>">
+                            &laquo;
+                        </a>
+                    </li>
+
+                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                    <li class="page-item <?= ($i == $page) ? 'active' : '' ?>">
+                        <a class="page-link"
+                            href="?search=<?= urlencode($search_query) ?>&brand=<?= urlencode($filter_brand) ?>&page=<?= $i ?>">
+                            <?= $i ?>
+                        </a>
+                    </li>
+                    <?php endfor; ?>
+
+                    <!-- Nút trang sau -->
+                    <li class="page-item <?= ($page >= $total_pages) ? 'disabled' : '' ?>">
+                        <a class="page-link"
+                            href="?search=<?= urlencode($search_query) ?>&brand=<?= urlencode($filter_brand) ?>&page=<?= $page+1 ?>">
+                            &raquo;
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+            <?php endif; ?>
             <?php else: ?>
             <div class="col-12">
                 <div class="alert alert-info">Không có sản phẩm nào phù hợp.</div>

@@ -33,10 +33,6 @@ if (isset($_POST['confirm_delete'])) {
         $error_message = "Không thể xóa vì người dùng đã đặt hàng (orders).";
     } elseif (checkRelation($conn, "cart", "user_id", $user_id)) {
         $error_message = "Không thể xóa vì người dùng đang có giỏ hàng (cart).";
-    } elseif (checkRelation($conn, "cart_items", "user_id", $user_id)) {
-        $error_message = "Không thể xóa vì người dùng có sản phẩm trong giỏ (cart_items).";
-    } elseif (checkRelation($conn, "order_items", "user_id", $user_id)) {
-        $error_message = "Không thể xóa vì người dùng có sản phẩm trong đơn hàng (order_items).";
     }else{
         try {
            $del = $conn->prepare("DELETE FROM users WHERE id = ?");
