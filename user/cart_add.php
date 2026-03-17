@@ -10,6 +10,7 @@
     }
     $user_id = $_SESSION["user_id"];
     $product_id = intval($_GET["product_id"]);
+    $quantity = isset($_GET["quantity"]) ? max(1, intval($_GET["quantity"])) : 1;
     $sql = "SELECT id FROM cart WHERE user_id = $user_id";
     $result = $conn->query($sql);
     if($result->num_rows > 0){
@@ -22,11 +23,11 @@
     $result2 = $conn->query($sql2);
     if($result2->num_rows > 0){
         $conn->query("UPDATE cart_items 
-                             SET quantity = quantity + 1 
+                             SET quantity = quantity + $quantity 
                              WHERE cart_id = $cart_id AND product_id = $product_id");
     }else {
         $conn->query("INSERT INTO cart_items (cart_id, product_id, quantity) 
-                             VALUES ($cart_id, $product_id, 1)");
+                             VALUES ($cart_id, $product_id, $quantity)");
     }
     header("Location: dashboard.php");
     exit;

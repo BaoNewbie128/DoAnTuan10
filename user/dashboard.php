@@ -297,6 +297,11 @@ if ($result === FALSE) {
                                 <?php else: ?>
                                 <div class="alert alert-info">Không có tuỳ chọn màu cho sản phẩm này.</div>
                                 <?php endif; ?>
+                                <div class="mt-3">
+                                    <label class="form-label fw-bold">Số lượng</label>
+                                    <input type="number" name="quantity" class="form-control" value="1" min="1"
+                                        max="quantity" required>
+                                </div>
                             </div>
 
                             <div class="modal-footer">
